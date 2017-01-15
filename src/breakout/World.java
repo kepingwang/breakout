@@ -14,15 +14,25 @@ import javafx.stage.Stage;
 
 public class World extends Application {
 	
-	double currTime = 0.0;
+	public static final double epsDist = 1e-6;
+	
+	/**
+	 * Records the current time 
+	 * @author keping
+	 */
+	class Time {
+		private double t;
+		public Time(double t) { this.t = t; }
+		public void add(double dt) { t += dt; }
+	}
+	
+	Time time = new Time(0.0);
 	long prevNanos = 0;
 	
 	// canvas size
-	private final double canvasWidth = 400;
-	private final double canvasHeight = 600;
-	private final double barY = 550;
-	
-	
+	public static final double canvasWidth = 400;
+	public static final double canvasHeight = 600;
+	final double batY = 550;
 	
 	// sprites
 	Bat bat;
@@ -33,8 +43,9 @@ public class World extends Application {
 
 	// keyboard and mouse events
 	ArrayList<String> keyInput = new ArrayList<>();
-	ArrayList<Double> mouseInput = new ArrayList<>();
+	ArrayList<Double> mouseMove = new ArrayList<>();
 	boolean mouseClicked = false;
+	boolean paused = false;
 	
 	// collision events
 	PriorityQueue<Collision> collisions = new PriorityQueue<>();
@@ -64,12 +75,13 @@ public class World extends Application {
 			keyInput.remove(code);
 		});
 		scene.setOnMouseMoved(e -> {
-			mouseInput.add(e.getSceneX());
+			mouseMove.add(e.getSceneX());
+//			System.out.println(e.getSceneX()+","+e.getSceneY());
 		});
 		scene.setOnMouseClicked(e -> {
 			mouseClicked = true;
 		});
-		
+
 		
 		// Game loop
 		AnimationTimer timer = new AnimationTimer() {
@@ -80,52 +92,39 @@ public class World extends Application {
 					 return;
 				 }
 				 long deltaNanos = now - prevNanos;
-				 double deltaTime = deltaNanos / 1.0e9;
-				 currTime += deltaTime;
+				 double dt = deltaNanos / 1.0e9;
+				 double endTime = time.t + dt; // time end of frame
 				 prevNanos = now;
 				 
-				 // Move the bat according to keyboard and mouse input
-				 // reset event queue
-				 // Assume that the bat is moving with uniform velocity within frame
-				 double prevBatX = bat.getX();
-				 if (mouseInput.isEmpty()) {
+				 // update vx for bat (vx only for current frame)
+				 if (mouseMove.isEmpty()) {
 					 if (keyInput.contains("LEFT") || keyInput.contains("A")) {
-						 bat.update(-1, deltaTime);
+						 bat.addVX(-600);
 					 }
 					 if (keyInput.contains("RIGHT") || keyInput.contains("D")) {
-						 bat.update(1, deltaTime);
+						 bat.addVX(600);
 					 }
 				 } else {
-					 bat.setX(mouseInput.get(mouseInput.size()-1)-1);
+					 bat.addVX((mouseMove.get(mouseMove.size()-1) - bat.centerX())/dt);
 				 }
-				 keyInput.clear();
-				 mouseInput.clear();
-				 
-				 if (ball.stuckOnBat()) {
-					 ball.update(bat);
-					 if (mouseClicked) {
-						 ball.shootFromBat();
-						 predictCollisions(ball);
-					 }
-				 } else {
-					 ball.update(deltaTime);
-					 
-					 
-					 
-					 
-				 }
-				 
+				 mouseMove.clear();
+				 predictCollision(ball, bat, dt);
 				 
 				 // priority queue stores the ball-brick collision events
-				 if (!collisions.isEmpty()) {
-					 while (collisions.peek().time() < currTime) {
-						 Collision collision = collisions.poll();
-						 if (collision.isValid()) {
-							 // deal with collision, update ball, bat, and bricks
-							 // update future collisions
-						 }
+				 while (!collisions.isEmpty() &&
+						 collisions.peek().time() < endTime) {
+					 Collision collision = collisions.poll();
+					 if (collision.isValid()) {
+						 update(collision.time()-time.t);
+						 collision.resolve();
+						 predictCollisions(ball);
+					 } else {
+						 System.out.println("Invalid: "+collision);
 					 }
 				 }
+				 
+				 update(dt, mouseClicked);
+				 mouseClicked = false; // reset
 				 
 				 // render the images
 				 gc.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -133,20 +132,105 @@ public class World extends Application {
 			}
 		};
 		
+		scene.setOnKeyReleased(e -> {
+			if (e.getCode().toString().equals("P")) {
+				System.out.println("P pressed");
+				paused = !paused;
+				if (paused) { timer.stop(); }
+				else {
+					prevNanos = 0;
+					timer.start(); 
+				}
+			}
+		});
+		
 		timer.start();
 		stage.show();
 	}
 	
-	private void predictCollisions(Ball ball) {
+	private void predictCollision(Ball ball, Bat bat, double dt) {
+		if (ball.stuckOnBat()) { return; }
+		if (ball.vY() <= 0) { return; }
+		double yTarget = bat.centerY() - bat.height()/2 - ball.r();
+		if (ball.centerY() > yTarget) { return; }
+		double tToTarget = (yTarget - ball.centerY()) / ball.vY();
+		if (tToTarget > dt) { return; } // ball hasn't reached bottom
+		double ballTargetX = ball.centerX() + ball.vX()*tToTarget;
+		double batTargetX  = bat.centerX() + bat.vX()*tToTarget;
+		if (batTargetX + bat.width()/2 > ballTargetX &&
+			batTargetX - bat.width()/2 < ballTargetX) {
+			collisions.add(new BallBatCollision(ball, bat, time.t, time.t+tToTarget));
+		}
+		// TODO limit left right positions
+	}
+	
+	private void predictCollision(Ball ball, Brick brick) {
+		// TODO
 		
 	}
 	
+	private void predictBallWallCollision(Ball ball) {
+		if (ball.stuckOnBat()) { return; }
+		double tLeft = -1;
+		double tRight = -1;
+		double tTop = -1;
+		if (ball.vX() != 0) {
+			tLeft = (ball.r()-ball.centerX()) / ball.vX();
+			tRight= (canvasWidth-ball.r()-ball.centerX()) / ball.vX();
+		}
+		if (ball.vY() != 0) {
+			tTop = (ball.r()-ball.centerY()) / ball.vY();
+		}
+		String type = "";
+		double tDest = Double.POSITIVE_INFINITY;
+		if (tLeft > 0 && tLeft < tDest) {
+			type = "left";
+			tDest = tLeft;
+		}
+		if (tRight > 0 && tRight < tDest) {
+			type = "right";
+			tDest = tRight;
+		}
+		if (tTop > 0 && tTop < tDest) {
+			type = "top";
+			tDest = tTop;
+		}
+		if (!type.equals("")) {
+			collisions.add(new BallWallCollision(ball, type, time.t, time.t+tDest));
+		}
+	}
+	
+	private void predictCollisions(Ball ball) {
+		System.out.println(collisions);
+		predictBallWallCollision(ball);
+		for (Brick brick : bricks) {
+			predictCollision(ball, brick);
+		}
+		System.out.println(collisions);
+	}
+	
+	private void update(double dt) {
+		bat.update(dt);
+		ball.update(dt); // update the ball after bat (in case ball is stuck)
+		time.add(dt);
+	}
+	
+	private void update(double dt, boolean mouseClicked) {
+		update(dt);
+		if (ball.stuckOnBat() && mouseClicked) {
+			ball.shootFromBat();
+			predictCollisions(ball);
+		}
+	}
+	
 	private void initializeSprites() {
-		bat = new Bat(canvasWidth / 2, barY, 150, 30, 0, canvasWidth);
+		bat = new Bat(canvasWidth / 2, batY, 150, 30, 0, canvasWidth);
 		ball = new Ball(bat);
 		bricks = new LinkedList<Brick>();
 		scoreBoard = new ScoreBoard();
 		// TODO layout all breaks
+		bricks.add(new Brick(100, 100));
+		bricks.add(new Brick(300, 400));
 	}
 	
 	private void render(GraphicsContext gc) {

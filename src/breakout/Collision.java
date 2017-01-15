@@ -1,20 +1,27 @@
 package breakout;
 
-public class Collision implements Comparable<Collision> {
+public abstract class Collision implements Comparable<Collision> {
 
+	
+	protected double tOn;
+	/**
+	 * Predicted time of collision.
+	 */
+	protected double t;
+
+	public abstract void resolve();
+	
 	@Override
 	public int compareTo(Collision o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (t < o.t) { return -1; }
+		else if (t > o.t) { return 1; }
+		else { return 0; }
 	}
 	
-	public boolean isValid() {
-		// TODO;
-		return true;
-	}
+	public abstract boolean isValid();
 	
 	public double time() {
-		// TODO;
-		return 0.0;
+		return t;
 	}
+	
 }
