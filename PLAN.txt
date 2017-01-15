@@ -1,1 +1,32 @@
 Game plan for breakout.
+
+
+The main feature of the game is some powerups:
+1. Fire ball. (The bricks hit explodes with neighbors.)
+2. Lightning ball. (Going through everything.)
+3. Multiple balls.
+4. Slower ball.
+5. Faster ball.
+6. Shorter bat.
+7. Longer bat.
+8. Sticky bat. (Click to shoot the ball.)
+9. Bat with guns. (Shoot the bricks.)
+
+
+Different block:
+1. One hit block.
+2. Two hits block.
+3. Three hits block.
+4. Unbreakable block.
+
+
+Level plans:
+1. Read from text files.
+2. Add difficulty by putting more unbreakable bricks in the front.
+
+
+Cheat keys:
+1. Next level.
+2. Add one life.
+3. Reset ball.
+4. Remove a random brick.
