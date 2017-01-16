@@ -27,5 +27,8 @@ public abstract class Collision implements Comparable<Collision> {
 	public int score() {
 		return 0;
 	}
+	public int life() {
+		return 0;
+	}
 	
 }

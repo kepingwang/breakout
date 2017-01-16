@@ -41,4 +41,10 @@ public class BallWallCollision extends Collision {
 	public String toString() {
 		return "Ball "+wall.type()+" Wall "+t;
 	}
+	
+	@Override
+	public int life() {
+		if (wall.type().equals("bottom")) { return -1; }
+		else { return 0; }
+	}
 }

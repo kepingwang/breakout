@@ -7,6 +7,8 @@ public class ScoreBoard {
 
 	private int score;
 	private int lives;
+	private boolean needResetBall = false;
+	
 	public ScoreBoard(int initScore, int initLives) {
 		score = initScore;
 		lives = initLives;
@@ -23,8 +25,24 @@ public class ScoreBoard {
 		score += ds;
 	}
 	
+	public void addLife(int dl) {
+		lives += dl;
+		if (dl < 0) { needResetBall = true; }
+		// when no life, switch to split screen;
+	}
+	
+	public boolean isGameOver() {
+		return lives <= 0;
+	}
+	
+	public void setNeedResetBallFalse() {
+		needResetBall = false;
+	}
+	public boolean needResetBall() {
+		return needResetBall;
+	}
+	
 	public void update(double dt) {
-		// TODO Auto-generated method stub
 		
 	}
 

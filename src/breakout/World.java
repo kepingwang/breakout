@@ -68,34 +68,11 @@ public class World extends Application {
 		stage.setScene(scene);
 		stage.setTitle("Breakout Game");
 		
+		Splash splash = new Splash(scene, stage);
+		
 		// Initialize sprites and displays
 		initializeSprites();
-		
-		// Set keyboard and mouse events
-		scene.setOnKeyPressed(e -> {
-			String code = e.getCode().toString();
-			if (!keyInput.contains(code)) {
-				keyInput.add(code);
-			}
-		});
-		scene.setOnKeyReleased(e -> {
-			String code = e.getCode().toString();
-			keyInput.remove(code);
-		});
-		scene.setOnMouseMoved(e -> {
-			mouseMove.add(e.getSceneX());
-//			System.out.println(e.getSceneX()+","+e.getSceneY());
-		});
-		scene.setOnMouseClicked(e -> {
-			mouseClicked = true;
-		});
-		scene.setOnKeyPressed(e -> {
-			if (e.getCode().toString().equals("S")) { // start debugging
-				ball.setX(ball.centerX());
-			}
-		});
 
-		
 		// Game loop
 		AnimationTimer timer = new AnimationTimer() {
 			@Override
@@ -131,6 +108,15 @@ public class World extends Application {
 						 update(collision.time()-time.t);
 						 collision.resolve();
 						 scoreBoard.addScore(collision.score());
+						 scoreBoard.addLife(collision.life());
+						 if (scoreBoard.isGameOver()) {
+							 stage.setScene(splash.scene());
+						 }
+						 if (scoreBoard.needResetBall()) {
+							 // reset ball
+							 ball = new Ball(bat);
+							 scoreBoard.setNeedResetBallFalse();
+						 }
 						 predictCollisions(ball);
 					 }
 				 }
@@ -144,9 +130,17 @@ public class World extends Application {
 			}
 		};
 		
-		scene.setOnKeyReleased(e -> {
-			if (e.getCode().toString().equals("P")) {
-				System.out.println("P pressed");
+		
+		// Set keyboard and mouse events
+		scene.setOnKeyPressed(e -> {
+			String code = e.getCode().toString();
+			if (!keyInput.contains(code)) {
+				keyInput.add(code);
+			}
+			if (code.equals("S")) {
+				stage.setScene(splash.scene());
+			}
+			if (code.equals("P")) {
 				paused = !paused;
 				if (paused) { timer.stop(); }
 				else {
@@ -155,17 +149,19 @@ public class World extends Application {
 				}
 			}
 		});
-		
-		timer.start();
-	
-		Splash splash = new Splash(scene, stage);
-		
-		scene.setOnKeyPressed(e -> {
-			if (e.getCode().toString().equals("S")) {
-				stage.setScene(splash.scene());
-			}
+		scene.setOnKeyReleased(e -> {
+			String code = e.getCode().toString();
+			keyInput.remove(code);
+		});
+		scene.setOnMouseMoved(e -> {
+			mouseMove.add(e.getSceneX());
+		});
+		scene.setOnMouseClicked(e -> {
+			mouseClicked = true;
 		});
 
+		
+		timer.start();
 		stage.setScene(splash.scene());
 		stage.show();
 	}
@@ -305,12 +301,14 @@ public class World extends Application {
 		double tLeft = -1;
 		double tRight = -1;
 		double tTop = -1;
+		double tBottom = -1;
 		if (ball.vX() != 0) {
 			tLeft = (ball.r()-ball.centerX()) / ball.vX();
 			tRight= (canvasWidth-ball.r()-ball.centerX()) / ball.vX();
 		}
 		if (ball.vY() != 0) {
 			tTop = (ball.r()-ball.centerY()) / ball.vY();
+			tBottom = (canvasHeight+ball.r()*2-ball.centerY()) / ball.vY();
 		}
 		String type = "";
 		double tDest = Double.POSITIVE_INFINITY;
@@ -325,6 +323,10 @@ public class World extends Application {
 		if (tTop > 0 && tTop < tDest) {
 			type = "top";
 			tDest = tTop;
+		}
+		if (tBottom > 0 && tBottom < tDest) {
+			type = "bottom";
+			tDest = tBottom;
 		}
 		if (!type.equals("")) {
 			collisions.add(new BallWallCollision(ball, type, time.t, time.t+tDest));
