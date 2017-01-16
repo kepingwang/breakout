@@ -15,6 +15,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import sprites.Ball;
 import sprites.Bat;
@@ -156,6 +158,16 @@ public class World extends Application {
 		});
 		
 		timer.start();
+	
+		Splash splash = new Splash(scene, stage);
+		
+		scene.setOnKeyPressed(e -> {
+			if (e.getCode().toString().equals("S")) {
+				stage.setScene(splash.scene());
+			}
+		});
+
+		stage.setScene(splash.scene());
 		stage.show();
 	}
 	
