@@ -19,5 +19,8 @@ public abstract class BallBrickCollision extends Collision {
 	public boolean isValid() {
 		return ball.tLastCollision() <= tOn && brick.tLastCollision() <= tOn;
 	}
+	
+	@Override
+	public int score() { return 100; }
 
 }

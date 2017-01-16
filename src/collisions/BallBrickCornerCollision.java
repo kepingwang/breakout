@@ -46,7 +46,7 @@ public class BallBrickCornerCollision extends BallBrickCollision {
 		ball.setTimeLastCollision(t);
 		brick.setTimeLastCollision(t);
 	}
-
+	
 	@Override
 	public String toString() {
 		return ball.toString() + " hit corner "+pos+" "+ brick.toString() + " tOn "+

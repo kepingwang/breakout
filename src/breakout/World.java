@@ -15,8 +15,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import sprites.Ball;
 import sprites.Bat;
@@ -132,6 +130,7 @@ public class World extends Application {
 					 if (collision.isValid()) {
 						 update(collision.time()-time.t);
 						 collision.resolve();
+						 scoreBoard.addScore(collision.score());
 						 predictCollisions(ball);
 					 }
 				 }
@@ -358,10 +357,10 @@ public class World extends Application {
 		bat = new Bat(canvasWidth / 2, batY, 150, 30, 0, canvasWidth);
 		ball = new Ball(bat);
 		bricks = new LinkedList<Brick>();
-		scoreBoard = new ScoreBoard();
 		// TODO layout all breaks
 		bricks.add(new Brick(100, 100));
 		bricks.add(new Brick(300, 400));
+		scoreBoard = new ScoreBoard(0, 3);
 	}
 	
 	private void render(GraphicsContext gc) {
