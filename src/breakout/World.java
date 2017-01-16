@@ -9,8 +9,6 @@ public class World extends Application {
 	public static final double canvasWidth = 400;
 	public static final double canvasHeight = 600;
 
-
-
 	@Override
 	public void start(Stage stage) throws Exception {
 		GamePlay game = new GamePlay(stage);

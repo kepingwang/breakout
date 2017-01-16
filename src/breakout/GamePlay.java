@@ -1,6 +1,7 @@
 package breakout;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
@@ -124,8 +125,7 @@ public class GamePlay {
 							 endGame();
 						 }
 						 if (scoreBoard.needResetBall()) {
-							 // reset ball
-							 ball = new Ball(bat);
+							 ball = new Ball(bat); // reset ball
 							 scoreBoard.setNeedResetBallFalse();
 						 }
 						 predictCollisions(ball);
@@ -135,6 +135,7 @@ public class GamePlay {
 				 update(dt, mouseClicked);
 				 mouseClicked = false; // reset
 				 
+				 removeGoneBricks();
 				 // render the images
 				 gc.clearRect(0, 0, canvasWidth, canvasHeight);
 				 render(gc);
@@ -354,12 +355,12 @@ public class GamePlay {
 		for (Brick brick : bricks) {
 			predictCollision(ball, brick);
 		}
-		System.out.println(collisions);
 	}
 	
 	private void update(double dt) {
 		bat.update(dt);
 		ball.update(dt); // update the ball after bat (in case ball is stuck)
+		for (Brick brick : bricks) { brick.update(dt); }
 		time.add(dt);
 	}
 	
@@ -388,6 +389,12 @@ public class GamePlay {
 		scoreBoard.render(gc);
 	}
 	
-
+	private void removeGoneBricks() {
+		Iterator<Brick> it = bricks.iterator();
+		while (it.hasNext()) {
+			Brick brick = (Brick) it.next();
+			if (brick.gone()) { it.remove(); }
+		}
+	}
 	
 }

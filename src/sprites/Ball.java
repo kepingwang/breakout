@@ -9,6 +9,7 @@ public class Ball extends Sprite {
 	private double r;
 	private boolean stuckOnBat = false;
 	private Bat bat;
+	private int attack = 1;
 	
 	public Ball() {
 		centerX = 100;
@@ -31,6 +32,7 @@ public class Ball extends Sprite {
 		stuckOnBat = false;
 	}
 	
+	public int attack() { return attack; }
 	public boolean stuckOnBat() { return stuckOnBat; }
 	
 	public double r() { return r; }

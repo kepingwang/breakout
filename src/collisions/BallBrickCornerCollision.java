@@ -16,7 +16,7 @@ public class BallBrickCornerCollision extends BallBrickCollision {
 
 	@Override
 	public void resolve() {
-		System.out.println(this);
+		attack();
 		double cX = 0; // corner X
 		double cY = 0; // corner Y
 		if (pos.equals("top-left")) {

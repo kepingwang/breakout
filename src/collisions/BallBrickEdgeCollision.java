@@ -16,7 +16,7 @@ public class BallBrickEdgeCollision extends BallBrickCollision {
 
 	@Override
 	public void resolve() {
-		System.out.println(this);
+		attack();
 		if (pos.equals("top")) {
 			ball.setVY(-ball.vY());
 			ball.setY(brick.centerY()-brick.height()/2-ball.r()-World.epsDist);
