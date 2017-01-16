@@ -13,10 +13,19 @@ import javafx.stage.Stage;
  */
 public class Splash {
 
+	private Stage stage;
 	private Scene scene;
 	private VBox vBox;
+	private GamePlay game;
 	
-	public Splash(Scene gameScene, Stage stage) {
+	public Splash(Stage stage) {
+		this.stage = stage;
+	}
+	public void setGamePlay(GamePlay game) {
+		this.game = game;
+	}
+	
+	public void init() {
 		vBox = new VBox();
 		scene = new Scene(vBox);
 		Rectangle button = new Rectangle(300, 150);
@@ -24,10 +33,15 @@ public class Splash {
 		
 		Text text = new Text("Start");
 		text.setOnMouseClicked(e -> {
-			stage.setScene(gameScene);
+			game.init();
+			game.play();
 		});
 		
 		vBox.getChildren().addAll(button, text);
+	}
+	public void go() {
+		stage.setScene(scene);
+		stage.show();
 	}
 
 	public Scene scene() {
