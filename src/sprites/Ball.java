@@ -1,4 +1,4 @@
-package breakout;
+package sprites;
 
 import javafx.scene.canvas.GraphicsContext;
 
@@ -54,5 +54,13 @@ public class Ball extends Sprite {
 			centerX += vX * dt;
 			centerY += vY * dt;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "Ball ("+String.format("%.2f", centerX)+","+
+				String.format("%.2f", centerY)+")  v("+
+				String.format("%.2f", vX)+","+
+				String.format("%.2f", vY)+")";
 	}
 }

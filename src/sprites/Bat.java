@@ -1,4 +1,4 @@
-package breakout;
+package sprites;
 
 import javafx.scene.canvas.GraphicsContext;
 

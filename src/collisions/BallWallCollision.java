@@ -1,4 +1,8 @@
-package breakout;
+package collisions;
+
+import breakout.World;
+import sprites.Ball;
+import sprites.Wall;
 
 public class BallWallCollision extends Collision {
 
@@ -25,12 +29,12 @@ public class BallWallCollision extends Collision {
 				ball.setX(World.canvasWidth-ball.r()-World.epsDist);
 			}
 		}
-		ball.tLastCollision = t;
+		ball.setTimeLastCollision(t);
 	}
 
 	@Override
 	public boolean isValid() {
-		return ball.tLastCollision <= tOn;
+		return ball.tLastCollision() <= tOn;
 	}
 	
 	@Override

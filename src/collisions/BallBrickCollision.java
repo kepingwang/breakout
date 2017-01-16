@@ -1,9 +1,12 @@
-package breakout;
+package collisions;
+
+import sprites.Ball;
+import sprites.Brick;
 
 public abstract class BallBrickCollision extends Collision {
 
-	private Ball ball;
-	private Brick brick;
+	protected Ball ball;
+	protected Brick brick;
 	
 	public BallBrickCollision(Ball ball, Brick brick, double tOn, double t) {
 		this.ball = ball;
@@ -14,7 +17,7 @@ public abstract class BallBrickCollision extends Collision {
 	
 	@Override
 	public boolean isValid() {
-		return ball.tLastCollision <= tOn && brick.tLastCollision <= tOn;
+		return ball.tLastCollision() <= tOn && brick.tLastCollision() <= tOn;
 	}
 
 }

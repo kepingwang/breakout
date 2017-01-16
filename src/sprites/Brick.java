@@ -1,4 +1,4 @@
-package breakout;
+package sprites;
 
 import javafx.scene.canvas.GraphicsContext;
 
@@ -19,8 +19,13 @@ public class Brick extends Sprite {
 
 	@Override
 	public void update(double deltaTime) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
+	@Override
+	public String toString() {
+		return "Brick ("+String.format("%.2f", centerX)+","+
+				String.format("%.2f", centerY)+")";
+	}
+	
 }

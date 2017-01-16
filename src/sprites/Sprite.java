@@ -1,4 +1,4 @@
-package breakout;
+package sprites;
 
 import javafx.scene.canvas.GraphicsContext;
 
@@ -32,4 +32,10 @@ public abstract class Sprite {
 	
 	public abstract void render(GraphicsContext gc);
 	
+	public double tLastCollision() {
+		return tLastCollision;
+	}
+	public void setTimeLastCollision(double t) {
+		tLastCollision = t;
+	}
 }

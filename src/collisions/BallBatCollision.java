@@ -1,4 +1,8 @@
-package breakout;
+package collisions;
+
+import breakout.World;
+import sprites.Ball;
+import sprites.Bat;
 
 public class BallBatCollision extends Collision {
 
@@ -19,12 +23,12 @@ public class BallBatCollision extends Collision {
 		ball.setVY( - v * Math.cos(angle));
 		ball.setVX(v * Math.sin(angle));
 		ball.setY(bat.centerY()-bat.height()/2-ball.r()-World.epsDist);
-		ball.tLastCollision = t;
+		ball.setTimeLastCollision(t);
 	}
 
 	@Override
 	public boolean isValid() {
-		return ball.tLastCollision <= tOn;
+		return ball.tLastCollision() <= tOn;
 	}
 
 	@Override

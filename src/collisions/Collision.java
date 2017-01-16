@@ -1,4 +1,4 @@
-package breakout;
+package collisions;
 
 public abstract class Collision implements Comparable<Collision> {
 
