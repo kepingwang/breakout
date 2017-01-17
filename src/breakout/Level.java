@@ -2,6 +2,7 @@ package breakout;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,8 @@ public class Level {
 	
 	public Level(String fileName) {
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(fileName));
+			URL url = getClass().getClassLoader().getResource(fileName);
+			BufferedReader br = new BufferedReader(new FileReader(url.getPath()));
 			String line;
 			list = new ArrayList<int[]>();
 			while ((line = br.readLine()) != null) {
@@ -44,7 +46,8 @@ public class Level {
 		for (int i = 0; i < list.size(); i++) {
 			for (int j = 0; j < list.get(i).length; j++) {
 				if (list.get(i)[j] != 0) {
-					bricks.add(new Brick(w*j+w/2, h*i+h/2, w, h, list.get(i)[j]));
+					int lives = list.get(i)[j];
+					bricks.add(new Brick(w*j+w/2, h*i+h/2, w, h, lives, lives <= 3));
 				}
 			}
 		}

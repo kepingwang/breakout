@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 import collisions.BallBatCornerCollision;
 import collisions.BallBatEdgeCollision;
@@ -65,7 +66,7 @@ public class GamePlay {
 	// keyboard and mouse events
 	ArrayList<String> keyInput;
 	ArrayList<Double> mouseMove;
-	boolean mouseClicked;
+	boolean shoot;
 	boolean paused;
 	// collision events
 	PriorityQueue<Collision> collisions;
@@ -85,7 +86,7 @@ public class GamePlay {
 		collisions = new PriorityQueue<Collision>();
 		keyInput = new ArrayList<String>();
 		mouseMove = new ArrayList<Double>();
-		mouseClicked = false;
+		shoot = false;
 		paused = false;
 		time = new Time(0.0);
 		prevNanos = 0;
@@ -167,12 +168,12 @@ public class GamePlay {
 					 }
 				 }
 				 
-				 update(dt, mouseClicked);
+				 update(dt, shoot);
 				 bat.stopMovement(time.t);
-				 mouseClicked = false; // reset
+				 shoot = false; // reset
 				 
 				 removeGoneBricks();
-				 if (bricks.isEmpty()) {
+				 if (levelClear()) {
 					 nextLevel();
 				 }
 				 // render the images
@@ -196,6 +197,9 @@ public class GamePlay {
 					animationTimer.start(); 
 				}
 			}
+			if (code.equals("SPACE") || code.equals("ENTER")) {
+				shoot = true;
+			}
 		});
 		scene.setOnKeyReleased(e -> {
 			String code = e.getCode().toString();
@@ -206,12 +210,24 @@ public class GamePlay {
 			if (code.equals("MINUS")) {
 				speedUp(0.5);
 			}
+			if (code.equals("N")) {
+				nextLevel();
+			}
+			if (code.equals("R")) {
+				ball = new Ball(bat);
+			}
+			if (code.equals("K")) {
+				killRandomBrick();
+			}
+			if (code.equals("L")) {
+				scoreBoard.addLife(1);
+			}
 		});
 		scene.setOnMouseMoved(e -> {
 			mouseMove.add(e.getSceneX());
 		});
 		scene.setOnMouseClicked(e -> {
-			mouseClicked = true;
+			shoot = true;
 		});
 	}
 
@@ -221,6 +237,14 @@ public class GamePlay {
 	public void play() {
 		animationTimer.start();
 		stage.setScene(scene);
+	}
+
+	public boolean levelClear() {
+		if (bricks.isEmpty()) { return true; }
+		for (Brick brick : bricks) {
+			if (brick.breakable() && !brick.dead()) { return false;	}
+		}
+		return true;
 	}
 	
 	public void endGame(boolean win, int score) {
@@ -476,9 +500,23 @@ public class GamePlay {
 		}
 	}
 	
+	//// Cheat key and power up effects.
 	private void speedUp(double factor) {
 		ball.speedUp(factor, time.t);
 		predictCollisions(ball);
+	}
+	
+	private void killBrick(Brick brick) {
+		brick.kill();
+	}
+	private void killRandomBrick() {
+		if (bricks.isEmpty()) { return; }
+		int count = (new Random()).nextInt(bricks.size());
+		Iterator<Brick> it = bricks.iterator();
+		for (int i = 0; i < count; i++) {
+			it.next();
+		}
+		killBrick(it.next());
 	}
 	
 }

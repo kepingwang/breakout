@@ -5,6 +5,8 @@ import javafx.scene.canvas.GraphicsContext;
 public class Ball extends Sprite {
 	
 	private final double initVelocity = 360;
+	private final double minSpeed = 120;
+	private final double maxSpeed = 6000;
 	
 	private double r;
 	private boolean stuckOnBat = false;
@@ -47,6 +49,8 @@ public class Ball extends Sprite {
 	 * @param factor
 	 */
 	public void speedUp(double factor, double currTime) {
+		// limit max speed and min speed
+		if (v()*factor < minSpeed || v()*factor > maxSpeed) { return; }
 		vX *= factor;
 		vY *= factor;
 		tLastCollision = currTime;
