@@ -4,7 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Ball extends Sprite {
 	
-	private final double initVelocity = 600;
+	private final double initVelocity = 360;
 	
 	private double r;
 	private boolean stuckOnBat = false;
@@ -42,6 +42,15 @@ public class Ball extends Sprite {
 	public void setX(double x) { centerX = x; }
 	public void setY(double y) { centerY = y; }
 	
+	/**
+	 * Speed up (or slow down) the ball by a factor.
+	 * @param factor
+	 */
+	public void speedUp(double factor, double currTime) {
+		vX *= factor;
+		vY *= factor;
+		tLastCollision = currTime;
+	}
 	
 	@Override
 	public void render(GraphicsContext gc) {

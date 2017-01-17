@@ -1,7 +1,6 @@
 package collisions;
 
 public abstract class Collision implements Comparable<Collision> {
-
 	
 	protected double tOn;
 	/**

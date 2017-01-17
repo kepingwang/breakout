@@ -5,11 +5,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-import collisions.BallBatCollision;
+import collisions.BallBatCornerCollision;
+import collisions.BallBatEdgeCollision;
 import collisions.BallBrickCornerCollision;
 import collisions.BallBrickEdgeCollision;
 import collisions.BallWallCollision;
 import collisions.Collision;
+import collisions.Prediction;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -139,14 +141,17 @@ public class GamePlay {
 				 } else {
 					 bat.addVX((mouseMove.get(mouseMove.size()-1) - bat.centerX())/dt);
 				 }
+				 bat.limitV(dt);
 				 mouseMove.clear();
-				 predictCollision(ball, bat, dt);
+				 predictCollisions(bat);
 				 
 				 // priority queue stores the collision events
 				 while (!collisions.isEmpty() &&
 						 collisions.peek().time() < endTime) {
 					 Collision collision = collisions.poll();
 					 if (collision.isValid()) {
+						 // TODO comment out stdout
+						 System.out.println(collision);
 						 update(collision.time()-time.t);
 						 collision.resolve();
 						 scoreBoard.addScore(collision.score());
@@ -163,6 +168,7 @@ public class GamePlay {
 				 }
 				 
 				 update(dt, mouseClicked);
+				 bat.stopMovement(time.t);
 				 mouseClicked = false; // reset
 				 
 				 removeGoneBricks();
@@ -194,6 +200,12 @@ public class GamePlay {
 		scene.setOnKeyReleased(e -> {
 			String code = e.getCode().toString();
 			keyInput.remove(code);
+			if (code.equals("EQUALS")) {
+				speedUp(2);
+			}
+			if (code.equals("MINUS")) {
+				speedUp(0.5);
+			}
 		});
 		scene.setOnMouseMoved(e -> {
 			mouseMove.add(e.getSceneX());
@@ -218,21 +230,62 @@ public class GamePlay {
 		splash.go();
 	}
 	
-	private void predictCollision(Ball ball, Bat bat, double dt) {
+	private void predictCollisions(Bat bat) {
+		predictCollision(ball, bat);
+	}
+	
+	/**
+	 * Predict ball bat collisions
+	 * @param ball
+	 * @param bat
+	 * @param t duration of the current frame.
+	 */
+	private void predictCollision(Ball ball, Bat bat) {
 		if (ball.stuckOnBat()) { return; }
 		if (ball.vY() <= 0) { return; }
-		double yTarget = bat.centerY() - bat.height()/2 - ball.r();
-		if (ball.centerY() > yTarget) { return; }
-		double tToTarget = (yTarget - ball.centerY()) / ball.vY();
-		if (tToTarget > dt) { return; } // ball hasn't reached bottom
-		double ballTargetX = ball.centerX() + ball.vX()*tToTarget;
-		double batTargetX  = bat.centerX() + bat.vX()*tToTarget;
-		if (batTargetX + bat.width()/2 > ballTargetX &&
-			batTargetX - bat.width()/2 < ballTargetX) {
-			collisions.add(new BallBatCollision(ball, bat, time.t, time.t+tToTarget));
+		
+		double dt = -1;
+		String pos = "";
+		double tEdge = (bat.centerY()-bat.height()/2 -ball.r()-ball.centerY()) / ball.vY();
+		if (tEdge > 0 && 
+			bat.centerX()+bat.vX()*tEdge-bat.width()/2+bat.r() < ball.centerX()+ball.vX()*tEdge &&
+			bat.centerX()+bat.vX()*tEdge+bat.width()/2-bat.r() > ball.centerX()+ball.vX()*tEdge) {
+			if (dt < 0 || tEdge < dt) {
+				dt = tEdge;
+				pos = "edge";
+			}
 		}
-		// TODO limit left right positions
-		// TODO ball colliding with bat corner
+		double tLeft = Prediction.tBallBallCollision(
+				ball.centerX(), ball.centerY(), ball.r(), ball.vX(), ball.vY(),
+				bat.centerX()-bat.width()/2+bat.r(), bat.centerY(), bat.r(),
+				bat.vX(), bat.vY()
+				);
+		if (tLeft > 0) {
+			if (dt < 0 || tLeft < dt) {
+				dt = tLeft;
+				pos = "left";
+			}
+		}
+		double tRight = Prediction.tBallBallCollision(
+				ball.centerX(), ball.centerY(), ball.r(), ball.vX(), ball.vY(),
+				bat.centerX()+bat.width()/2-bat.r(), bat.centerY(), bat.r(),
+				bat.vX(), bat.vY()
+				);
+		if (tRight > 0) {
+			if (dt < 0 || tRight < dt){
+				dt = tRight;
+				pos = "right";
+			}
+		}
+		
+		if (dt > 0) {
+			if (pos.equals("edge")) {
+				collisions.add(new BallBatEdgeCollision(ball, bat, time.t, time.t+dt));
+			} else {
+				collisions.add(new BallBatCornerCollision(ball, bat, pos, time.t, time.t+dt));
+			}
+		}
+
 	}
 	
 	private void predictCollision(Ball ball, Brick brick) {
@@ -421,6 +474,11 @@ public class GamePlay {
 			Brick brick = (Brick) it.next();
 			if (brick.gone()) { it.remove(); }
 		}
+	}
+	
+	private void speedUp(double factor) {
+		ball.speedUp(factor, time.t);
+		predictCollisions(ball);
 	}
 	
 }

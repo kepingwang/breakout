@@ -1,30 +1,19 @@
 package collisions;
 
-import breakout.World;
 import sprites.Ball;
 import sprites.Bat;
 
-public class BallBatCollision extends Collision {
+public abstract class BallBatCollision extends Collision {
 
-	private Ball ball;
-	private Bat bat;
+	protected Ball ball;
+	protected Bat bat;
 	
 	public BallBatCollision(Ball ball, Bat bat, double tOn, double t) {
 		this.ball = ball;
 		this.bat = bat;
 		this.tOn = tOn;
 		this.t = t;
-	}
-	
-	@Override
-	public void resolve() {
-		double v = ball.v();
-		double angle = 0.8 * (Math.PI / 2) * ( ( ball.centerX() - bat.centerX() ) / (bat.width()/2));
-		ball.setVY( - v * Math.cos(angle));
-		ball.setVX(v * Math.sin(angle));
-		ball.setY(bat.centerY()-bat.height()/2-ball.r()-World.epsDist);
-		ball.setTimeLastCollision(t);
-	}
+	}	
 
 	@Override
 	public boolean isValid() {
