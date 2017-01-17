@@ -1,26 +1,40 @@
 package breakout;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class ScoreBoard {
 
 	private int score;
 	private int lives;
+	private int level; // level index, start from 1
 	private boolean needResetBall = false;
 	
-	public ScoreBoard(int initScore, int initLives) {
+	public ScoreBoard(int initScore, int initLives, int initLevel) {
 		score = initScore;
 		lives = initLives;
+		level = initLevel;
 	}
 	
 	public void render(GraphicsContext gc) {
 		gc.setFont(Font.font(12));
-		gc.fillText("Score: "+score, 20, 20);
-		gc.fillText("Lives: "+lives, 20, 50);
-		
+		gc.setFill(Color.FORESTGREEN);
+		gc.fillText("Score: "+score, 10, 20);
+		gc.fillText("Level: "+level, 10, 32);
+		gc.fillText("Lives: "+lives, 10, 44);
+		gc.setFill(Color.BLACK);
 	}
 
+	public int level() {
+		return level;
+	}
+	public void addLevel(int x) {
+		level += x;
+	}
+	public int score() {
+		return score;
+	}
 	public void addScore(int ds) {
 		score += ds;
 	}

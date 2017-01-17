@@ -1,25 +1,40 @@
 package sprites;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class Brick extends Sprite {
 
 	private final static double explosionTime = 1.0;
-	private double timeRemain = 1.0; // before disappears
+	private double timeRemain = explosionTime; // before disappears
 	private int lives;
 	
-	public Brick(double x, double y) {
+	/**
+	 * Create a new Brick.
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @param initLives
+	 */
+	public Brick(double x, double y, double w, double h, int initLives) {
 		centerX = x;
 		centerY = y;
-		width = 100;
-		height = 40;
-		lives = 1;
+		width = w;
+		height = h;
+		lives = initLives;
 	}
 	
 	@Override
 	public void render(GraphicsContext gc) {
 		gc.setGlobalAlpha(timeRemain / explosionTime);
+		if (lives == 2) {
+			gc.setFill(Color.BLUE);
+		} else if (lives == 3) {
+			gc.setFill(Color.LIGHTBLUE);
+		}
 		gc.fillRect(centerX-width/2, centerY-height/2, width, height);
+		gc.setFill(Color.BLACK);
 		gc.setGlobalAlpha(1);
 	}
 

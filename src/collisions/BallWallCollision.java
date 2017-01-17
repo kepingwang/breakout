@@ -26,7 +26,7 @@ public class BallWallCollision extends Collision {
 			if (wall.type().equals("left")) {
 				ball.setX(0+ball.r()+World.epsDist);
 			} else {
-				ball.setX(World.canvasWidth-ball.r()-World.epsDist);
+				ball.setX(World.width-ball.r()-World.epsDist);
 			}
 		}
 		ball.setTimeLastCollision(t);

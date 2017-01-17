@@ -24,18 +24,24 @@ public class GamePlay {
 
 	private Stage stage;
 	private Splash splash;
+	private Scene scene;
+	private GraphicsContext gc;
+	private AnimationTimer animationTimer;
+	private Level[] levels;
+	
 	public GamePlay(Stage stage) {
 		this.stage = stage;
 	}
 	public void setSplash(Splash splash) {
 		this.splash = splash;
 	}
-	
-	private Scene scene;
 	public Scene scene() { return scene; }
-	private GraphicsContext gc;
-	private AnimationTimer animationTimer;
-
+	public void readLevelConfig() {
+		levels = new Level[3];
+		for (int i = 0; i < levels.length; i++) {
+			levels[i] = new Level("config/level"+(i+1)+".txt");
+		}
+	}
 	
 	/**
 	 * Records the current time 
@@ -46,43 +52,67 @@ public class GamePlay {
 		public Time(double t) { this.t = t; }
 		public void add(double dt) { t += dt; }
 	}
-	Time time = new Time(0.0);
-	long prevNanos = 0;
-	
-	// canvas size
-	public static final double canvasWidth = World.canvasWidth;
-	public static final double canvasHeight = World.canvasHeight;
-	final double batY = 550;
-	
+	Time time;
+	long prevNanos;
 	// sprites
 	Bat bat;
 	Ball ball;
 	LinkedList<Brick> bricks;
 	// other displays
 	ScoreBoard scoreBoard;
-
 	// keyboard and mouse events
-	ArrayList<String> keyInput = new ArrayList<>();
-	ArrayList<Double> mouseMove = new ArrayList<>();
-	boolean mouseClicked = false;
-	boolean paused = false;
-	
+	ArrayList<String> keyInput;
+	ArrayList<Double> mouseMove;
+	boolean mouseClicked;
+	boolean paused;
 	// collision events
-	PriorityQueue<Collision> collisions = new PriorityQueue<>();
+	PriorityQueue<Collision> collisions;
 	
 	public void init() {
 		initScene();
-		initSprites();
+		scoreBoard = new ScoreBoard(0, 3, 1);
 		initAnimationTimer();
-		initInputEvents();
+		initEventHandlers();
+		readLevelConfig();
+		initLevel();
+	}
+	
+	// level index comes from scoreBoard
+	public void initLevel() {
+		initSprites();
+		collisions = new PriorityQueue<Collision>();
+		keyInput = new ArrayList<String>();
+		mouseMove = new ArrayList<Double>();
+		mouseClicked = false;
+		paused = false;
+		time = new Time(0.0);
+		prevNanos = 0;
+	}
+	
+	public void nextLevel() {
+		animationTimer.stop();
+		scoreBoard.addLevel(1);
+		if (scoreBoard.level() > levels.length) {
+			endGame(true, scoreBoard.score());
+		} else {
+			initLevel();
+			animationTimer.start();
+		}
 	}
 	
 	private void initScene() {
 		Group root = new Group();
-		Canvas canvas = new Canvas(canvasWidth, canvasHeight);
+		Canvas canvas = new Canvas(World.width, World.height);
 		gc = canvas.getGraphicsContext2D();
 		root.getChildren().add(canvas);
 		scene = new Scene(root);
+	}
+	
+	private void initSprites() {
+		bat = new Bat(World.width/2, World.height-60, 150, 30, 0, World.width);
+		ball = new Ball(bat);
+		bricks = new LinkedList<Brick>();
+		levels[scoreBoard.level()-1].layoutBricks(bricks);
 	}
 	
 	private void initAnimationTimer() {
@@ -122,7 +152,7 @@ public class GamePlay {
 						 scoreBoard.addScore(collision.score());
 						 scoreBoard.addLife(collision.life());
 						 if (scoreBoard.isGameOver()) {
-							 endGame();
+							 endGame(false, scoreBoard.score());
 						 }
 						 if (scoreBoard.needResetBall()) {
 							 ball = new Ball(bat); // reset ball
@@ -136,14 +166,17 @@ public class GamePlay {
 				 mouseClicked = false; // reset
 				 
 				 removeGoneBricks();
+				 if (bricks.isEmpty()) {
+					 nextLevel();
+				 }
 				 // render the images
-				 gc.clearRect(0, 0, canvasWidth, canvasHeight);
+				 gc.clearRect(0, 0, World.width, World.height);
 				 render(gc);
 			}
 		};
 	}
 	
-	private void initInputEvents() {
+	private void initEventHandlers() {
 		scene.setOnKeyPressed(e -> {
 			String code = e.getCode().toString();
 			if (!keyInput.contains(code)) {
@@ -178,8 +211,10 @@ public class GamePlay {
 		stage.setScene(scene);
 	}
 	
-	public void endGame() {
+	public void endGame(boolean win, int score) {
 		animationTimer.stop();
+		if (win) { splash.setMsg("Score: "+score+". You just Won :)"); }
+		else { splash.setMsg("Score: "+score+". You just Losed :("); }
 		splash.go();
 	}
 	
@@ -197,6 +232,7 @@ public class GamePlay {
 			collisions.add(new BallBatCollision(ball, bat, time.t, time.t+tToTarget));
 		}
 		// TODO limit left right positions
+		// TODO ball colliding with bat corner
 	}
 	
 	private void predictCollision(Ball ball, Brick brick) {
@@ -321,11 +357,11 @@ public class GamePlay {
 		double tBottom = -1;
 		if (ball.vX() != 0) {
 			tLeft = (ball.r()-ball.centerX()) / ball.vX();
-			tRight= (canvasWidth-ball.r()-ball.centerX()) / ball.vX();
+			tRight= (World.width-ball.r()-ball.centerX()) / ball.vX();
 		}
 		if (ball.vY() != 0) {
 			tTop = (ball.r()-ball.centerY()) / ball.vY();
-			tBottom = (canvasHeight+ball.r()*2-ball.centerY()) / ball.vY();
+			tBottom = (World.height+ball.r()*2-ball.centerY()) / ball.vY();
 		}
 		String type = "";
 		double tDest = Double.POSITIVE_INFINITY;
@@ -370,16 +406,6 @@ public class GamePlay {
 			ball.shootFromBat();
 			predictCollisions(ball);
 		}
-	}
-	
-	private void initSprites() {
-		bat = new Bat(canvasWidth / 2, batY, 150, 30, 0, canvasWidth);
-		ball = new Ball(bat);
-		bricks = new LinkedList<Brick>();
-		// TODO layout all breaks
-		bricks.add(new Brick(100, 100));
-		bricks.add(new Brick(300, 400));
-		scoreBoard = new ScoreBoard(0, 3);
 	}
 	
 	private void render(GraphicsContext gc) {

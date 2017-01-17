@@ -4,7 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Ball extends Sprite {
 	
-	private final double initVelocity = 360;
+	private final double initVelocity = 600;
 	
 	private double r;
 	private boolean stuckOnBat = false;
