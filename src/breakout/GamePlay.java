@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import sprites.Ball;
 import sprites.Bat;
 import sprites.Brick;
+import sprites.PowerUp;
 
 public class GamePlay {
 
@@ -61,6 +62,7 @@ public class GamePlay {
 	Bat bat;
 	Ball ball;
 	LinkedList<Brick> bricks;
+	LinkedList<PowerUp> powerUps;
 	// other displays
 	ScoreBoard scoreBoard;
 	// keyboard and mouse events
@@ -79,9 +81,9 @@ public class GamePlay {
 		readLevelConfig();
 		initLevel();
 	}
-	
-	// level index comes from scoreBoard
+
 	public void initLevel() {
+		// level index comes from scoreBoard
 		initSprites();
 		collisions = new PriorityQueue<Collision>();
 		keyInput = new ArrayList<String>();
@@ -116,6 +118,7 @@ public class GamePlay {
 		ball = new Ball(bat);
 		bricks = new LinkedList<Brick>();
 		levels[scoreBoard.level()-1].layoutBricks(bricks);
+		powerUps = new LinkedList<PowerUp>();
 	}
 	
 	private void initAnimationTimer() {
@@ -154,9 +157,7 @@ public class GamePlay {
 						 // TODO comment out stdout
 						 System.out.println(collision);
 						 update(collision.time()-time.t);
-						 collision.resolve();
-						 scoreBoard.addScore(collision.score());
-						 scoreBoard.addLife(collision.life());
+						 collision.resolve(scoreBoard, powerUps);
 						 if (scoreBoard.isGameOver()) {
 							 endGame(false, scoreBoard.score());
 						 }
@@ -205,10 +206,10 @@ public class GamePlay {
 			String code = e.getCode().toString();
 			keyInput.remove(code);
 			if (code.equals("EQUALS")) {
-				speedUp(2);
+				speedUp(1.5);
 			}
 			if (code.equals("MINUS")) {
-				speedUp(0.5);
+				speedUp(0.666);
 			}
 			if (code.equals("N")) {
 				nextLevel();
@@ -474,6 +475,7 @@ public class GamePlay {
 		bat.update(dt);
 		ball.update(dt); // update the ball after bat (in case ball is stuck)
 		for (Brick brick : bricks) { brick.update(dt); }
+		for (PowerUp powerUp : powerUps) { powerUp.update(dt); }
 		time.add(dt);
 	}
 	
@@ -489,6 +491,7 @@ public class GamePlay {
 		bat.render(gc);
 		ball.render(gc);
 		for (Brick brick : bricks) { brick.render(gc); }
+		for (PowerUp powerUp : powerUps) { powerUp.render(gc); }
 		scoreBoard.render(gc);
 	}
 	

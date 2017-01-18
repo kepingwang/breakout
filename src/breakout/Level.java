@@ -2,7 +2,6 @@ package breakout;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,23 +12,29 @@ public class Level {
 	
 	private int nBricksHorizontal = -1;
 	private int nBricksVertical = 15;
-	private List<int[]> list;
+	private List<int[][]> list;
 	
 	public Level(String fileName) {
 		try {
-			URL url = getClass().getClassLoader().getResource(fileName);
-			BufferedReader br = new BufferedReader(new FileReader(url.getPath()));
+//			URL url = getClass().getClassLoader().getResource(fileName);
+			BufferedReader br = new BufferedReader(new FileReader(fileName));
 			String line;
-			list = new ArrayList<int[]>();
+			list = new ArrayList<int[][]>();
 			while ((line = br.readLine()) != null) {
 				if (nBricksHorizontal == -1) {
 					nBricksHorizontal = Integer.parseInt(line.trim()); 
 				} else {
 					if (line.trim().isEmpty()) { continue; }
 					String[] s = line.trim().split("\\s+");
-					int[] arr = new int[s.length];
+					int[][] arr = new int[s.length][2];
 					for (int i = 0; i < arr.length; i++) {
-						arr[i] = Integer.parseInt(s[i]);
+						if (s[i].indexOf('p') == -1) {
+							arr[i][0] = Integer.parseInt(s[i]);
+							arr[i][1] = -1;
+						} else {
+							arr[i][0] = Integer.parseInt(s[i].split("p")[0]);
+							arr[i][1] = Integer.parseInt(s[i].split("p")[1]);
+						}
 					}
 					list.add(arr);
 				}
@@ -45,9 +50,10 @@ public class Level {
 		double h = World.height / nBricksVertical;
 		for (int i = 0; i < list.size(); i++) {
 			for (int j = 0; j < list.get(i).length; j++) {
-				if (list.get(i)[j] != 0) {
-					int lives = list.get(i)[j];
-					bricks.add(new Brick(w*j+w/2, h*i+h/2, w, h, lives, lives <= 3));
+				if (list.get(i)[j][0] > 0) {
+					int lives = list.get(i)[j][0];
+					int powerUp = list.get(i)[j][1];
+					bricks.add(new Brick(w*j+w/2, h*i+h/2, w, h, lives, powerUp));
 				}
 			}
 		}

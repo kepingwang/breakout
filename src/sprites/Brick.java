@@ -1,5 +1,7 @@
 package sprites;
 
+import java.util.List;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -8,24 +10,21 @@ public class Brick extends Sprite {
 	private final static double explosionTime = 1.0;
 	private double timeRemain = explosionTime; // before disappears
 	private int lives;
-	private boolean breakable = true;
+	private boolean breakable;
+	private int powerUpType; // TODO specify powerUpType int type correspondence
+	// -1 for no power up
 	
-	/**
-	 * Create a new Brick.
-	 * @param x
-	 * @param y
-	 * @param w
-	 * @param h
-	 * @param initLives
-	 */
-	public Brick(double x, double y, double w, double h, int initLives, boolean breakable) {
+	public Brick(double x, double y, double w, double h,
+				 int initLives, int powerUpType) {
 		centerX = x;
 		centerY = y;
 		width = w;
 		height = h;
 		lives = initLives;
-		this.breakable = breakable;
+		this.breakable = (initLives <= 3);
+		this.powerUpType = powerUpType;
 	}
+	
 	
 	@Override
 	public void render(GraphicsContext gc) {
@@ -42,6 +41,12 @@ public class Brick extends Sprite {
 		gc.fillRect(centerX-width/2, centerY-height/2, width, height);
 		gc.setFill(Color.BLACK);
 		gc.setGlobalAlpha(1);
+	}
+	
+	public void spawnPowerUp(List<PowerUp> powerUps) {
+		if (powerUpType >= 0) {
+			powerUps.add(new PowerUp(centerX, centerY, powerUpType));
+		}
 	}
 
 	public boolean dead() {
