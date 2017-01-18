@@ -130,9 +130,10 @@ public class GamePlay {
 					 return;
 				 }
 				 long deltaNanos = now - prevNanos;
+				 prevNanos = now;
 				 double dt = deltaNanos / 1.0e9;
 				 double endTime = time.t + dt; // time end of frame
-				 prevNanos = now;
+				 
 				 
 				 // update vx for bat (vx only for current frame)
 				 if (mouseMove.isEmpty()) {
@@ -257,6 +258,13 @@ public class GamePlay {
 	
 	private void predictCollisions(Bat bat) {
 		predictCollision(ball, bat);
+		for (PowerUp powerUp : powerUps) {
+			predictCollision(bat, powerUp);
+		}
+	}
+	
+	private void predictCollision(Bat bat, PowerUp powerUp) {
+		
 	}
 	
 	/**
@@ -267,7 +275,6 @@ public class GamePlay {
 	 */
 	private void predictCollision(Ball ball, Bat bat) {
 		if (ball.stuckOnBat()) { return; }
-		if (ball.vY() <= 0) { return; }
 		
 		double dt = -1;
 		String pos = "";

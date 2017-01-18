@@ -17,7 +17,7 @@ public abstract class BallBatCollision extends Collision {
 
 	@Override
 	public boolean isValid() {
-		return ball.tLastCollision() <= tOn;
+		return ball.tLastCollision() <= tOn && bat.tLastCollision() <= tOn;
 	}
 
 	@Override

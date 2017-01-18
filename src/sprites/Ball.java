@@ -5,7 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 public class Ball extends Sprite {
 	
 	private final double initVelocity = 360;
-	private final double minSpeed = 120;
+	private final double minSpeed = 30;
 	private final double maxSpeed = 6000;
 	
 	private double r;
