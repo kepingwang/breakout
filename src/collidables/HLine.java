@@ -30,7 +30,7 @@ public class HLine extends Collidable {
 		if (dvy * dy >= 0) { return -1;	}
 		double dt = - dy / dvy;
 		if (intervalIntersect(
-				x0() + dvx * dt, x1() + dvx * dt, hl.x0(), hl.x1()
+				x0(), x1(), hl.x0() + dvx * dt, hl.x1() + dvx * dt
 			)) {
 			return dt;
 		} else {

@@ -1,7 +1,5 @@
 package sprites;
 
-import java.util.List;
-
 import breakout.GameWorld;
 import collidables.Circle;
 import collidables.Collidable;
@@ -49,9 +47,9 @@ public class Brick extends Sprite {
 	}
 	
 	
-	public void spawnPowerUp(List<PowerUp> powerUps) {
+	private void spawnPowerUp() {
 		if (powerUpType >= 0) {
-			powerUps.add(new PowerUp(world, x(), y(), powerUpType));
+			world.addPowerUp(new PowerUp(world, x(), y(), powerUpType));
 		}
 	}
 	
@@ -66,6 +64,7 @@ public class Brick extends Sprite {
 		world.addScore(INIT_SCORE);
 		world.removeBrick(this);
 		world.addToFadings(this);
+		spawnPowerUp();
 	}
 	
 	public boolean dead() {

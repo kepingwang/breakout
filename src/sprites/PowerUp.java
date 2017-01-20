@@ -55,6 +55,10 @@ public class PowerUp extends Sprite {
 		return bat.predictCollisionSpec(this);
 	}
 	@Override
+	protected Collision predictCollisionSpec(Wall wall) {
+		return predictCollisionImpl(wall);
+	}
+	@Override
 	public Collision predictCollision(Sprite other) {
 		return other.predictCollisionSpec(this);
 	}
@@ -63,6 +67,10 @@ public class PowerUp extends Sprite {
 	@Override
 	protected void collisionEffectsSpec(Bat bat) {
 		bat.collisionEffectsSpec(this);
+	}
+	@Override
+	protected void collisionEffectsSpec(Wall wall) {
+		world.removePowerUp(this);
 	}
 	@Override
 	public void collisionEffects(Sprite other) {

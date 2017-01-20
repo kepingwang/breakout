@@ -6,14 +6,13 @@ public class Collision implements Comparable<Collision> {
 	
 	protected Collidable c0;
 	protected Collidable c1;
-	protected double timePredictionMade;
+	protected long sysTimePredictionMade;
 	protected double timeHappening;
 	
-	public Collision(Collidable c0, Collidable c1, 
-			double timePredictionMade, double timeHappening) {
+	public Collision(Collidable c0, Collidable c1, double timeHappening) {
 		this.c0 = c0;
 		this.c1 = c1;
-		this.timePredictionMade = timePredictionMade;
+		sysTimePredictionMade = System.nanoTime();
 		this.timeHappening = timeHappening;
 	}
 	
@@ -30,10 +29,12 @@ public class Collision implements Comparable<Collision> {
 	}
 	
 	public boolean isValid() {
-		return (c0.sprite().timeLastCollision() <= timePredictionMade &&
-				c1.sprite().timeLastCollision() <= timePredictionMade);
+		return (c0.sprite().exists() && c1.sprite().exists() &&
+				c0.sprite().trajectoryUnchangedAfter(sysTimePredictionMade) &&
+				c1.sprite().trajectoryUnchangedAfter(sysTimePredictionMade)
+				);
 	}
-	
+
 	public double timeHappening() {
 		return timeHappening;
 	}
@@ -41,7 +42,7 @@ public class Collision implements Comparable<Collision> {
 	@Override
 	public String toString() {
 		return "Collision >< " + String.format(
-				"t %.4f, %.4f", timePredictionMade, timeHappening) + "\n"
+				"t %d, %.4f", sysTimePredictionMade, timeHappening) + "\n"
 			 + c0.sprite() + ": " + c0 + "\n"
 			 + c1.sprite() + ": " + c1 + "\n";
 	}

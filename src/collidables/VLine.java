@@ -30,7 +30,7 @@ public class VLine extends Collidable {
 		if (dvx * dx >= 0) { return -1; }
 		double dt = - dx / dvx;
 		if (intervalIntersect(
-				y0() + dvy * dt, y1() + dvy * dt, vl.y0(), vl.y1()
+				y0(), y1(), vl.y0() + dvy * dt, vl.y1() + dvy * dt
 			)) {
 			return dt;
 		} else {

@@ -92,11 +92,10 @@ public class GameWorld {
 					Collision collision = collisions.poll();
 					if (collision.isValid()) {
 						updateTo(collision.timeHappening());
-						System.out.println("resolve "+collision);
 						collision.resolve();
 					}
 				}
-				 
+				
 				evaluateWinLose();
 				
 				updateTo(endTime);
@@ -261,7 +260,7 @@ public class GameWorld {
 		}
 	}
 
-	private List<Sprite> getAllSprites() {
+	public List<Sprite> getAllSprites() {
 		List<Sprite> sprites = new ArrayList<>();
 		sprites.add(bat);
 		sprites.addAll(balls);
@@ -270,7 +269,7 @@ public class GameWorld {
 		sprites.addAll(walls);
 		return sprites;
 	}
-	private List<Displayable> getOtherDisplays() {
+	public List<Displayable> getOtherDisplays() {
 		List<Displayable> otherDisplays = new ArrayList<>();
 		otherDisplays.add(scoreBoard);
 		otherDisplays.addAll(fadings);
@@ -280,15 +279,16 @@ public class GameWorld {
 	public void removeBall(Ball ball) { balls.remove(ball); }
 	public void removeBrick(Brick brick) { bricks.remove(brick); }
 	public void removePowerUp(PowerUp powerUp) { powerUps.remove(powerUp); }
+	public void addPowerUp(PowerUp powerUp) { powerUps.add(powerUp); }
 	public void addToFadings(Brick brick) {	fadings.add(brick);	}
 	public void removeFromFadings(Brick brick) { fadings.remove(brick); }
 	
 	public void predictCollisions(Sprite sprite) {
+		if (!getAllSprites().contains(sprite)) { return; }
 		for (Sprite other : getAllSprites()) {
 			if (sprite == other) { continue; }
 			Collision collision = sprite.predictCollision(other);
 			if (collision != null) {
-				System.out.println("predict "+collision);
 				collisions.add(collision); 
 			}
 		}

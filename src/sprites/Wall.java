@@ -47,6 +47,10 @@ public class Wall extends Sprite {
 		return ball.predictCollisionSpec(this);
 	}
 	@Override
+	protected Collision predictCollisionSpec(PowerUp powerUp) {
+		return powerUp.predictCollisionSpec(this);
+	}
+	@Override
 	public Collision predictCollision(Sprite other) {
 		return other.predictCollisionSpec(this);
 	}
@@ -55,6 +59,10 @@ public class Wall extends Sprite {
 	@Override
 	protected void collisionEffectsSpec(Ball ball) {
 		ball.collisionEffectsSpec(this);
+	}
+	@Override
+	protected void collisionEffectsSpec(PowerUp powerUp) {
+		powerUp.collisionEffectsSpec(this);
 	}
 	@Override
 	public void collisionEffects(Sprite other) {

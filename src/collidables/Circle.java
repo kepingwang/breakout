@@ -112,6 +112,10 @@ public class Circle extends Collidable {
 		double vxOut = c0.vx() - coeff * nx;
 		double vyOut = c0.vy() - coeff * ny;
 		c0.s.setV(vxOut, vyOut);
+		
+		if (c1.s instanceof Bat) {
+			c1.s.setVX(0);
+		}
 	}
 	@Override
 	public void collides(Collidable other) {

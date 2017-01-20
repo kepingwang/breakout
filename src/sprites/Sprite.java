@@ -17,7 +17,7 @@ public abstract class Sprite implements Displayable {
 	 */
 	private double m;
 	protected Collidable[] collidables = null;
-	private double timeLastCollision = -1;
+	private long sysTimeLastCollision;
 	
 	public Sprite(GameWorld world, double x, double y, double m) {
 		this.world = world;
@@ -43,8 +43,7 @@ public abstract class Sprite implements Displayable {
 	public void setV(double vx, double vy) {
 		this.vx = vx;
 		this.vy = vy;
-		timeLastCollision = world.currTime();
-		world.predictCollisions(this);
+		handlePostCollision();
 	}
 	public void setVX(double vx) { setV(vx, vy); }
 	public void setVY(double vy) { setV(vx, vy); }
@@ -57,17 +56,24 @@ public abstract class Sprite implements Displayable {
 	public void setPos(double x, double y) {
 		this.x = x;
 		this.y = y;
-		timeLastCollision = world.currTime();
-		world.predictCollisions(this);
+		handlePostCollision();
 	}
 	public void setX(double x) { setPos(x, y); }
 	public void setY(double y) { setPos(x, y); }
 	public Collidable[] collidables() { return collidables; }
 	
-	public double timeLastCollision() { return timeLastCollision; }
-	public void setTimeLastCollision(double t) { timeLastCollision = t; }
-	
+	public boolean exists() { return world.getAllSprites().contains(this); }
 
+	public boolean trajectoryUnchangedAfter(double t) {
+		return (sysTimeLastCollision <= t);
+	}
+	public void handlePostCollision() {
+		sysTimeLastCollision = System.nanoTime();
+		world.predictCollisions(this);
+	}
+
+	
+	
 	protected Collision predictCollisionImpl(Sprite other) {
 		if (collidables == null || other.collidables == null) { return null; }
 		double dtMin = -1;
@@ -84,8 +90,7 @@ public abstract class Sprite implements Displayable {
 			}
 		}
 		if (dtMin > 0) {
-			return new Collision(collidable0, collidable1,
-					world.currTime(), world.currTime() + dtMin);
+			return new Collision(collidable0, collidable1, world.currTime() + dtMin);
 		} else {
 			return null;
 		}
