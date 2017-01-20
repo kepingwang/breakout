@@ -1,44 +1,49 @@
 package collisions;
 
-import java.util.List;
+import collidables.Collidable;
 
-import breakout.ScoreBoard;
-import sprites.PowerUp;
-
-public abstract class Collision implements Comparable<Collision> {
+public class Collision implements Comparable<Collision> {
 	
-	protected double tOn;
-	/**
-	 * Predicted time of collision.
-	 */
-	protected double t;
-
-	public void resolve(ScoreBoard scoreBoard, List<PowerUp> powerUps) {
-		resolve();
-		scoreBoard.addScore(score());
-		scoreBoard.addLife(life());
+	protected Collidable c0;
+	protected Collidable c1;
+	protected double timePredictionMade;
+	protected double timeHappening;
+	
+	public Collision(Collidable c0, Collidable c1, 
+			double timePredictionMade, double timeHappening) {
+		this.c0 = c0;
+		this.c1 = c1;
+		this.timePredictionMade = timePredictionMade;
+		this.timeHappening = timeHappening;
 	}
 	
-	public abstract void resolve();
+	public void resolve() {
+		c0.collides(c1);
+		c0.sprite().collisionEffects(c1.sprite());
+	}
 	
 	@Override
 	public int compareTo(Collision o) {
-		if (t < o.t) { return -1; }
-		else if (t > o.t) { return 1; }
+		if (timeHappening < o.timeHappening) { return -1; }
+		else if (timeHappening > o.timeHappening) { return 1; }
 		else { return 0; }
 	}
 	
-	public abstract boolean isValid();
-	
-	public double time() {
-		return t;
+	public boolean isValid() {
+		return (c0.sprite().timeLastCollision() <= timePredictionMade &&
+				c1.sprite().timeLastCollision() <= timePredictionMade);
 	}
 	
-	public int score() {
-		return 0;
+	public double timeHappening() {
+		return timeHappening;
 	}
-	public int life() {
-		return 0;
+
+	@Override
+	public String toString() {
+		return "Collision >< " + String.format(
+				"t %.4f, %.4f", timePredictionMade, timeHappening) + "\n"
+			 + c0.sprite() + ": " + c0 + "\n"
+			 + c1.sprite() + ": " + c1 + "\n";
 	}
 	
 }

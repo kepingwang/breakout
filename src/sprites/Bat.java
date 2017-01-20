@@ -1,57 +1,90 @@
 package sprites;
 
-import breakout.World;
+import breakout.GameWorld;
+import collidables.Circle;
+import collidables.Collidable;
+import collidables.HLine;
+import collisions.Collision;
 import javafx.scene.canvas.GraphicsContext;
 
 public class Bat extends Sprite {
 
-	private final double limitLeft;
-	private final double limitRight;
-	private double r;
+	public static final double KEYBOARD_SPEED = 600;
+	public static final double WIDTH = 150;
+	public static final double HEIGHT = 30;
 	
-	public Bat(double x, double y, double w, double h, 
-			double left, double right) {
-		centerX = x;
-		centerY = y;
-		width = w;
-		height = h;
-		r = height / 2;
-		limitLeft = left;
-		limitRight = right;
+	private double w;
+	private double h;
+	
+	private Ball ball;
+	
+	public Bat(GameWorld world, double x, double y) {
+		super(world, x, y, -1);
+		this.w = WIDTH;
+		this.h = HEIGHT;
+		initCollidables();
+	}
+	@Override
+	protected void initCollidables() {
+		collidables = new Collidable[4];
+		collidables[0] = new HLine(this, -(w-h)/2, +(w-h)/2, -h/2);
+		collidables[1] = new HLine(this, -(w-h)/2, +(w-h)/2, +h/2);
+		collidables[2] = new Circle(this, -(w-h)/2, 0, h/2); 
+		collidables[3] = new Circle(this, +(w-h)/2, 0, h/2); 
 	}
 	
-	public double r() { return r; }
-	public void addVX(double deltaVX) {
-		this.vX += deltaVX;
+	public void setBall(Ball ball) {
+		this.ball = ball;
 	}
-	public void setVX(double vx) {
-		this.vX = vx;
+	
+	public double w() { return w; }
+	public double h() { return h; }
+	public void addVX(double dvx) {
+		setVX(vx() + dvx);
 	}
 	
 	/**
-	 * Limit vX of bat so that it doesn't move out of boundary within a frame.
+	 * If a ball is stuck on bat, update the ball together with the bat.
 	 */
-	public void limitV(double dt) {
-		if (centerX + vX*dt - width/2 < limitLeft) {
-			vX = (limitLeft + World.epsDist + width/2 - centerX) / dt; 
-		} else if (centerX + vX*dt + width/2 > limitRight) {
-			vX = (limitRight- World.epsDist - width/2 - centerX) / dt;
-		}
-	}
-
 	@Override
 	public void update(double dt) {
-		centerX += vX * dt;
-	}
-	
-	public void stopMovement(double currTime) {
-		vX = 0.0;
-		tLastCollision = currTime;
+		updatePos(dt);
+		if (ball.stuckOnBat()) {
+			ball.setX(x());
+		}
+		setVX(0);
 	}
 	
 	@Override
 	public void render(GraphicsContext gc) {
-		gc.fillRoundRect(centerX-width/2, centerY-height/2, width, height, r*2, r*2);
+		gc.fillRoundRect(x()-w/2, y()-h/2, w, h, h, h);
 	}
+
+	@Override
+	protected Collision predictCollisionSpec(Ball ball) {
+		return ball.predictCollisionSpec(this);
+	}
+	@Override
+	protected Collision predictCollisionSpec(PowerUp powerUp) {
+		return predictCollisionImpl(powerUp);
+	}
+	@Override
+	public Collision predictCollision(Sprite other) {
+		return other.predictCollisionSpec(this);
+	}
+	
+
+	@Override
+	protected void collisionEffectsSpec(PowerUp powerUp) {
+		powerUp.takeEffect();
+		world.removePowerUp(powerUp);
+	}
+	@Override
+	public void collisionEffects(Sprite other) {
+		other.collisionEffectsSpec(this);
+	}
+
+	@Override
+	protected String spriteName() { return "Bat"; }
 	
 }

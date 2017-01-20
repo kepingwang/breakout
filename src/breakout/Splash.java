@@ -15,20 +15,20 @@ public class Splash {
 
 	private Stage stage;
 	private Scene scene;
-	private GamePlay game;
+	private GameWorld game;
 	private VBox vBox;
 	private Text welcome;
 	
 	public Splash(Stage stage) {
 		this.stage = stage;
 	}
-	public void setGamePlay(GamePlay game) {
+	public void setGamePlay(GameWorld game) {
 		this.game = game;
 	}
 	
 	public void init() {
 		vBox = new VBox();
-		scene = new Scene(vBox, World.width, World.height);
+		scene = new Scene(vBox, GameApp.WIDTH, GameApp.HEIGHT);
 
 		welcome = new Text("Welcome!");
 		welcome.setFont(Font.font(35));
@@ -46,17 +46,17 @@ public class Splash {
 		});
 		
 		vBox.getChildren().addAll(welcome, startText);
-		vBox.setSpacing(World.height / 10);
+		vBox.setSpacing(GameApp.HEIGHT / 10);
 		vBox.setAlignment(Pos.CENTER);
 	}
 	
-	public void go() {
+	public void show() {
 		stage.setScene(scene);
 		stage.show();
 	}
 	
 	private void startGame() {
-		game.init();
+		game.initPlay();
 		game.play();
 	}
 	

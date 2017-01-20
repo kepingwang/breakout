@@ -3,7 +3,6 @@ package breakout;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import sprites.Brick;
@@ -45,15 +44,15 @@ public class Level {
 		} 
 	}
 	
-	public void layoutBricks(LinkedList<Brick> bricks) {
-		double w = World.width / nBricksHorizontal;
-		double h = World.height / nBricksVertical;
+	public void layoutBricks(List<Brick> bricks, GameWorld world) {
+		double w = GameApp.WIDTH / nBricksHorizontal;
+		double h = GameApp.HEIGHT / nBricksVertical;
 		for (int i = 0; i < list.size(); i++) {
 			for (int j = 0; j < list.get(i).length; j++) {
 				if (list.get(i)[j][0] > 0) {
 					int lives = list.get(i)[j][0];
 					int powerUp = list.get(i)[j][1];
-					bricks.add(new Brick(w*j+w/2, h*i+h/2, w, h, lives, powerUp));
+					bricks.add(new Brick(world, w*j+w/2, h*i+h/2, w, h, lives, powerUp));
 				}
 			}
 		}
