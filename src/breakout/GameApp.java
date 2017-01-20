@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 
 public class GameApp extends Application {
 	
+	public static final double EPS_DIST = 1e-6;
 	public static final double WIDTH = 600;
 	public static final double HEIGHT = 600;
 	public static final int NUM_LEVELS = 3;

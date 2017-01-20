@@ -39,10 +39,7 @@ public class Bat extends Sprite {
 	
 	public double w() { return w; }
 	public double h() { return h; }
-	public void addVX(double dvx) {
-		setVX(vx() + dvx);
-	}
-	
+
 	/**
 	 * If a ball is stuck on bat, update the ball together with the bat.
 	 */
@@ -52,7 +49,6 @@ public class Bat extends Sprite {
 		if (ball.stuckOnBat()) {
 			ball.setX(x());
 		}
-		setVX(0);
 	}
 	
 	@Override
@@ -74,6 +70,10 @@ public class Bat extends Sprite {
 	}
 	
 
+	@Override
+	protected void collisionEffectsSpec(Ball ball) {
+		ball.collisionEffectsSpec(this);
+	}
 	@Override
 	protected void collisionEffectsSpec(PowerUp powerUp) {
 		powerUp.takeEffect();

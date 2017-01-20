@@ -44,7 +44,7 @@ public class Collision implements Comparable<Collision> {
 		return "Collision >< " + String.format(
 				"t %d, %.4f", sysTimePredictionMade, timeHappening) + "\n"
 			 + c0.sprite() + ": " + c0 + "\n"
-			 + c1.sprite() + ": " + c1 + "\n";
+			 + c1.sprite() + ": " + c1;
 	}
 	
 }

@@ -8,7 +8,7 @@ import javafx.scene.canvas.GraphicsContext;
 public class Ball extends Sprite {
 	
 	public static final double INIT_SPEED = 360;
-	public static final double MIN_SPEED = 30;
+	public static final double MIN_SPEED = 10;
 	public static final double MAX_SPEED = 6000;
 	public static final double INIT_RADIUS = 15;
 	
@@ -95,6 +95,10 @@ public class Ball extends Sprite {
 		if (wall.pos().equals(Wall.BOTTOM)) { 
 			world.removeBall(this);
 		}
+	}
+	@Override
+	protected void collisionEffectsSpec(Bat bat) {
+		bat.setVX(0);
 	}
 	@Override
 	public void collisionEffects(Sprite other) {

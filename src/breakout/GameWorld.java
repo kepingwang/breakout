@@ -81,24 +81,28 @@ public class GameWorld {
 				long deltaNanos = now - prevNanos;
 				prevNanos = now;
 				double deltaTime = deltaNanos / 1.0e9;
-				double endTime = currTime + deltaTime;
+				double endTime = currTime + deltaTime; 
+				System.out.println("One Frame -----------");
 				
 				handleUserInput(deltaTime);
 				
 				// Event driven simulation. pq stores future collisions.
-				
 				while (!collisions.isEmpty() &&
 						collisions.peek().timeHappening() < endTime) {
 					Collision collision = collisions.poll();
 					if (collision.isValid()) {
 						updateTo(collision.timeHappening());
+						System.out.println("bat.vx(): "+bat.vx());
+						System.out.println(collision); // TODO print
 						collision.resolve();
+						System.out.println("bat.vx(): "+bat.vx());
 					}
 				}
 				
 				evaluateWinLose();
 				
 				updateTo(endTime);
+				bat.setVX(0);
 				
 				render(gc);
 			}

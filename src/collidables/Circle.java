@@ -1,5 +1,6 @@
 package collidables;
 
+import breakout.GameApp;
 import sprites.Bat;
 import sprites.Sprite;
 
@@ -112,10 +113,12 @@ public class Circle extends Collidable {
 		double vxOut = c0.vx() - coeff * nx;
 		double vyOut = c0.vy() - coeff * ny;
 		c0.s.setV(vxOut, vyOut);
-		
-		if (c1.s instanceof Bat) {
-			c1.s.setVX(0);
-		}
+		// Move the ball out of the brick / bat
+		double dx = c0.x() - c1.x();
+		double dy = c0.y() - c1.y();
+		double dr = Math.sqrt(dx*dx + dy*dy);
+		c0.s.setPos(c1.x()+dx/dr*(dr+GameApp.EPS_DIST), 
+					c1.y()+dy/dr*(dr+GameApp.EPS_DIST));
 	}
 	@Override
 	public void collides(Collidable other) {
