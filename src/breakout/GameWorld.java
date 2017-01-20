@@ -82,8 +82,7 @@ public class GameWorld {
 				prevNanos = now;
 				double deltaTime = deltaNanos / 1.0e9;
 				double endTime = currTime + deltaTime; 
-				System.out.println("One Frame -----------");
-				
+
 				handleUserInput(deltaTime);
 				
 				// Event driven simulation. pq stores future collisions.
@@ -91,11 +90,11 @@ public class GameWorld {
 						collisions.peek().timeHappening() < endTime) {
 					Collision collision = collisions.poll();
 					if (collision.isValid()) {
-						updateTo(collision.timeHappening());
-						System.out.println("bat.vx(): "+bat.vx());
-						System.out.println(collision); // TODO print
+						updateTo(collision.timeHappening()); // TODO
+						System.out.println("RESOLVE: "+collision);
 						collision.resolve();
-						System.out.println("bat.vx(): "+bat.vx());
+					} else {
+						System.out.println("INVALID: "+collision);
 					}
 				}
 				
@@ -139,11 +138,13 @@ public class GameWorld {
 				playNextLevel();
 			}
 			if (code.equals("R")) {
-				removeBall(balls.get(0));
-				balls.add(new Ball(bat));
+				resetBall();
 			}
 			if (code.equals("L")) {
 				scoreBoard.addLife(1);
+			}
+			if (code.equals("S")) {
+				splitBalls();
 			}
 		});
 		scene.setOnMouseMoved(e -> {
@@ -176,7 +177,7 @@ public class GameWorld {
 		walls = new ArrayList<Wall>();
 		bricks = new ArrayList<Brick>();
 		powerUps = new ArrayList<PowerUp>();
-		bat = new Bat(this, GameApp.WIDTH/2, GameApp.HEIGHT - 2 * Bat.HEIGHT);
+		bat = new Bat(this, GameApp.WIDTH/2, GameApp.HEIGHT - 2 * Bat.INIT_HEIGHT);
 		balls.add(new Ball(bat));
 		walls.add(new Wall(this, 0, GameApp.HEIGHT / 2 + Ball.INIT_RADIUS * 2, Wall.LEFT));
 		walls.add(new Wall(this, GameApp.WIDTH, GameApp.HEIGHT / 2 + Ball.INIT_RADIUS * 2, Wall.RIGHT));
@@ -322,10 +323,37 @@ public class GameWorld {
 	}
 	
 	//// Cheat key and power up effects.
-	private void speedUp(double factor) {
+	public void speedUp(double factor) {
 		for (Ball ball : balls) {
 			ball.speedUp(factor);
 		}
 	}
-
+	public void smallBall() {
+		for (Ball ball : balls) {
+			ball.setR(Ball.INIT_RADIUS / 2);
+		}
+	}
+	public void bigBall() {
+		for (Ball ball : balls) {
+			ball.setR(Ball.INIT_RADIUS * 2);
+		}
+	}
+	public void longBat() {
+		// TODO: buggy. ball may be in the middle of long bat.
+		// Could possibly make the bat grow longer gradually.
+		bat.setW(Bat.INIT_WIDTH * 2);
+	}
+	public void shortBat() {
+		bat.setW(Bat.INIT_WIDTH / 2);
+	}
+	public void splitBalls() { // the other ball has opposite v
+		List<Ball> oppoBalls = new ArrayList<>();
+		for (Ball ball : balls) {
+			oppoBalls.add(new Ball(ball));
+		}
+		balls.addAll(oppoBalls);
+		for (Ball oppoBall : oppoBalls) {
+			oppoBall.setV( - oppoBall.vx(), - oppoBall.vy());
+		}
+	}
 }

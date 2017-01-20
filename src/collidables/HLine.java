@@ -21,6 +21,12 @@ public class HLine extends Collidable {
 	public double x1() { return s.x() + dx1; }
 	public double y0() { return s.y() + dy0; }
 	public double y1() { return s.y() + dy1; }
+	public void setDPos(double dx0, double dx1, double dy) {
+		this.dx0 = dx0;
+		this.dx1 = dx1;
+		this.dy0 = dy;
+		this.dy1 = dy;
+	}
 
 	@Override
 	protected double collisionTimeSpec(HLine hl) {

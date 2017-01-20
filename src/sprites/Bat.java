@@ -1,5 +1,8 @@
 package sprites;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import breakout.GameWorld;
 import collidables.Circle;
 import collidables.Collidable;
@@ -10,18 +13,19 @@ import javafx.scene.canvas.GraphicsContext;
 public class Bat extends Sprite {
 
 	public static final double KEYBOARD_SPEED = 600;
-	public static final double WIDTH = 150;
-	public static final double HEIGHT = 30;
+	public static final double INIT_WIDTH = 150;
+	public static final double INIT_HEIGHT = 30;
 	
 	private double w;
 	private double h;
 	
-	private Ball ball;
+	private List<Ball> balls;
 	
 	public Bat(GameWorld world, double x, double y) {
 		super(world, x, y, -1);
-		this.w = WIDTH;
-		this.h = HEIGHT;
+		this.w = INIT_WIDTH;
+		this.h = INIT_HEIGHT;
+		balls = new ArrayList<Ball>();
 		initCollidables();
 	}
 	@Override
@@ -33,20 +37,31 @@ public class Bat extends Sprite {
 		collidables[3] = new Circle(this, +(w-h)/2, 0, h/2); 
 	}
 	
-	public void setBall(Ball ball) {
-		this.ball = ball;
+	public void addBall(Ball ball) {
+		balls.add(ball);
+	}
+	public void removeBall(Ball ball) {
+		balls.remove(ball);
 	}
 	
 	public double w() { return w; }
 	public double h() { return h; }
-
+	public void setW(double w) {
+		this.w = w;
+		((HLine) collidables[0]).setDPos(-(w-h)/2, +(w-h)/2, -h/2); 
+		((HLine) collidables[1]).setDPos(-(w-h)/2, +(w-h)/2, +h/2);
+		((Circle) collidables[2]).setDPos(-(w-h)/2, 0);
+		((Circle) collidables[3]).setDPos(+(w-h)/2, 0);
+		setPos(x(), y());
+	}
+	
 	/**
 	 * If a ball is stuck on bat, update the ball together with the bat.
 	 */
 	@Override
 	public void update(double dt) {
 		updatePos(dt);
-		if (ball.stuckOnBat()) {
+		for (Ball ball : balls) {
 			ball.setX(x());
 		}
 	}
@@ -69,11 +84,6 @@ public class Bat extends Sprite {
 		return other.predictCollisionSpec(this);
 	}
 	
-
-	@Override
-	protected void collisionEffectsSpec(Ball ball) {
-		ball.collisionEffectsSpec(this);
-	}
 	@Override
 	protected void collisionEffectsSpec(PowerUp powerUp) {
 		powerUp.takeEffect();

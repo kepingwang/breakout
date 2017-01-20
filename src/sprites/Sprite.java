@@ -71,8 +71,6 @@ public abstract class Sprite implements Displayable {
 		sysTimeLastCollision = System.nanoTime();
 		world.predictCollisions(this);
 	}
-
-	
 	
 	protected Collision predictCollisionImpl(Sprite other) {
 		if (collidables == null || other.collidables == null) { return null; }

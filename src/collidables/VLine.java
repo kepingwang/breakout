@@ -21,7 +21,13 @@ public class VLine extends Collidable {
 	public double x1() { return s.x() + dx1; }
 	public double y0() { return s.y() + dy0; }
 	public double y1() { return s.y() + dy1; }
-
+	public void setDPos(double dx, double dy0, double dy1) {
+		this.dx0 = dx;
+		this.dx1 = dx;
+		this.dy0 = dy0;
+		this.dy1 = dy1;
+	}
+	
 	@Override
 	protected double collisionTimeSpec(VLine vl) {
 		double dvx = vl.vx() - vx();

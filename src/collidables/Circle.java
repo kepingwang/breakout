@@ -20,6 +20,11 @@ public class Circle extends Collidable {
 	public double x() { return s.x() + dx; }
 	public double y() { return s.y() + dy; }
 	public double r() { return r; }
+	public void setDPos(double dx, double dy) {
+		this.dx = dx;
+		this.dy = dy;
+	}
+	public void setR(double r) { this.r = r; } 
 	
 	@Override
 	protected double collisionTimeSpec(VLine vl) {
@@ -84,6 +89,11 @@ public class Circle extends Collidable {
 	@Override
 	protected void collidesSpec(VLine vl) {
 		s.setVX(-vx());
+		if (vl.x0() < x()) {
+			s.setX(vl.x0() + r() + GameApp.EPS_DIST);
+		} else {
+			s.setX(vl.x0() - r() - GameApp.EPS_DIST);
+		}
 	}
 	protected void ballCollidesBatEdge(HLine hl) {
 		double v = Math.sqrt(vx()*vx() + vy()*vy());
@@ -96,6 +106,11 @@ public class Circle extends Collidable {
 	protected void collidesSpec(HLine hl) {
 		if (hl.s instanceof Bat) { ballCollidesBatEdge(hl); }
 		else { s.setVY(-vy()); }
+		if (hl.y0() < y()) {
+			s.setY(hl.y0() + r() + GameApp.EPS_DIST);
+		} else {
+			s.setY(hl.y0() - r() - GameApp.EPS_DIST);
+		}
 	}
 	@Override
 	protected void collidesSpec(Circle other) {
@@ -119,6 +134,10 @@ public class Circle extends Collidable {
 		double dr = Math.sqrt(dx*dx + dy*dy);
 		c0.s.setPos(c1.x()+dx/dr*(dr+GameApp.EPS_DIST), 
 					c1.y()+dy/dr*(dr+GameApp.EPS_DIST));
+		
+		if (c1.s instanceof Bat) {
+			c1.s.setVX(0);
+		}
 	}
 	@Override
 	public void collides(Collidable other) {

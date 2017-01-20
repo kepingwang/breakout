@@ -13,17 +13,29 @@ public class Ball extends Sprite {
 	public static final double INIT_RADIUS = 15;
 	
 	private double r;
-	private boolean stuckOnBat = false;
+	private Bat bat = null;
 	private int attackPower = 1;
 	
 	public Ball(Bat bat) {
 		super(bat.world, bat.x(), bat.y()-bat.h()/2-INIT_RADIUS, 1);
 		r = INIT_RADIUS;
-		bat.setBall(this);
-		stuckOnBat = true;
+		this.bat = bat;
+		bat.addBall(this);
 		initCollidables();
 		setV(0, 0);
 	}
+	public Ball(Ball other) {
+		super(other.world, other.x(), other.y(), 1);
+		r = other.r;
+		if (other.bat != null) {
+			other.bat.addBall(this);
+			bat = other.bat;
+		}
+		attackPower = other.attackPower;
+		initCollidables();
+		setV(other.vx(), other.vy());
+	}
+	
 	@Override
 	protected void initCollidables() {
 		collidables = new Collidable[1];
@@ -33,11 +45,17 @@ public class Ball extends Sprite {
 	public double r() { return r; }
 	public double v() { return Math.sqrt(vx()*vx() + vy()*vy()); }
 	
-	public boolean stuckOnBat() { return stuckOnBat; }
+	public void setR(double r) {
+		this.r = r;
+		((Circle) collidables[0]).setR(r);
+		setPos(x(), y());
+	}
+	
 	public void shootFromBat() { // No response if not stuck on bat
-		if (stuckOnBat) {
+		if (bat != null) {
+			bat.removeBall(this);
+			bat = null;
 			setV(0, -INIT_SPEED);
-			stuckOnBat = false;
 		}
 	}
 	
@@ -69,7 +87,7 @@ public class Ball extends Sprite {
 
 	@Override
 	protected Collision predictCollisionSpec(Bat bat) {
-		if (stuckOnBat) { return null; }
+		if (this.bat != null) { return null; }
 		else { return predictCollisionImpl(bat); }
 	}
 	@Override
@@ -95,10 +113,6 @@ public class Ball extends Sprite {
 		if (wall.pos().equals(Wall.BOTTOM)) { 
 			world.removeBall(this);
 		}
-	}
-	@Override
-	protected void collisionEffectsSpec(Bat bat) {
-		bat.setVX(0);
 	}
 	@Override
 	public void collisionEffects(Sprite other) {

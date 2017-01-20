@@ -36,6 +36,9 @@ public class PowerUp extends Sprite {
 
 	public void takeEffect() {
 		if (type >= 0) { System.out.println("Power UP!!"); }
+//		world.smallBall();
+//		world.bigBall();
+		world.shortBat();
 		// TODO;
 	}
 	
@@ -79,5 +82,5 @@ public class PowerUp extends Sprite {
 	
 	@Override
 	protected String spriteName() { return "PowerUp"; }
-
+	
 }
