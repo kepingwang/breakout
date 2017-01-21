@@ -129,7 +129,6 @@ public class GameWorld {
 		scene.setOnKeyReleased(e -> {
 			String code = e.getCode().toString();
 			keyInput.remove(code);
-			System.out.println(code);
 			if (code.equals("EQUALS")) { speedUp(1.5); }
 			else if (code.equals("MINUS")) { speedUp(0.666);	}
 			else if (code.equals("N")) { playNextLevel(); }
