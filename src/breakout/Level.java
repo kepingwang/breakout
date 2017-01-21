@@ -1,6 +1,7 @@
 package breakout;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,9 @@ public class Level {
 	
 	public Level(String fileName) {
 		try {
-//			URL url = getClass().getClassLoader().getResource(fileName);
-			BufferedReader br = new BufferedReader(new FileReader(fileName));
+			ClassLoader classLoader = getClass().getClassLoader();
+			File file = new File(classLoader.getResource(fileName).getFile());
+			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line;
 			list = new ArrayList<int[][]>();
 			while ((line = br.readLine()) != null) {

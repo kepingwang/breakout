@@ -26,6 +26,7 @@ public class GameWorld {
 	private GameApp gameApp;
 	private Stage stage;
 	private Splash splash;
+	private Group root;
 	private Scene scene;
 	private GraphicsContext gc;
 	private AnimationTimer animationTimer;
@@ -34,7 +35,7 @@ public class GameWorld {
 	private double currTime;
 	public double currTime() { return currTime; }
 	long prevNanos;
-	
+	 
 	// Sprites
 	Bat bat;
 	List<Ball> balls;
@@ -46,6 +47,7 @@ public class GameWorld {
 	// Other displays
 	ScoreBoard scoreBoard;
 	List<Displayable> fadings; // contains fading bricks
+	BlockingImage blockingImage;
 	
 	// User input events
 	ArrayList<String> keyInput;
@@ -64,10 +66,10 @@ public class GameWorld {
 	public Scene scene() { return scene; }
 	
 	private void initScene() {
-		Group root = new Group();
+		root = new Group();
 		Canvas canvas = new Canvas(GameApp.WIDTH, GameApp.HEIGHT);
 		gc = canvas.getGraphicsContext2D();
-		root.getChildren().add(canvas);
+		root.getChildren().addAll(canvas);
 		scene = new Scene(root);
 	}
 	private void initAnimationTimer() {
@@ -92,11 +94,8 @@ public class GameWorld {
 						collisions.peek().timeHappening() < endTime) {
 					Collision collision = collisions.poll();
 					if (collision.isValid()) {
-						updateTo(collision.timeHappening()); // TODO
-						System.out.println("RESOLVE: "+collision);
+						updateTo(collision.timeHappening());
 						collision.resolve();
-					} else {
-						System.out.println("INVALID: "+collision);
 					}
 				}
 				
@@ -197,8 +196,9 @@ public class GameWorld {
 	}
 	private void playLevel(int level) {
 		initStates();
-		fadings = new ArrayList<Displayable>();
 		initSprites(level);
+		fadings = new ArrayList<Displayable>();
+		blockingImage = new BlockingImage();
 		scoreBoard.setLevel(level);
 		animationTimer.start();
 		stage.setScene(scene);
@@ -287,18 +287,22 @@ public class GameWorld {
 	}
 	public List<Displayable> getOtherDisplays() {
 		List<Displayable> otherDisplays = new ArrayList<>();
-		otherDisplays.add(scoreBoard);
 		otherDisplays.addAll(fadings);
+		otherDisplays.add(blockingImage);
+		otherDisplays.add(scoreBoard);
 		return otherDisplays;
 	}
-		
+	
 	public void removeBall(Ball ball) { balls.remove(ball); }
 	public void removeBrick(Brick brick) { bricks.remove(brick); }
 	public void removePowerUp(PowerUp powerUp) { powerUps.remove(powerUp); }
 	public void addPowerUp(PowerUp powerUp) { powerUps.add(powerUp); }
 	public void addToFadings(Brick brick) {	fadings.add(brick);	}
 	public void removeFromFadings(Brick brick) { fadings.remove(brick); }
-	public void addBullet(Bullet bullet) { bullets.add(bullet); }
+	public void addBullet(Bullet bullet) {
+		bullets.add(bullet);
+		blockingImage.enlargeByFactor(1.7);
+	}
 	public void removeBullet(Bullet bullet) { bullets.remove(bullet); }
 	
 	public void predictCollisions(Sprite sprite) {

@@ -16,7 +16,7 @@ public class Bat extends Sprite {
 	public static final double KEYBOARD_SPEED = 600;
 	public static final double INIT_WIDTH = 150;
 	public static final double INIT_HEIGHT = 30;
-	public static final double BULLET_SPACING_TIME = 0.5;
+	public static final double BULLET_SPACING_TIME = 0.20;
 	
 	private double w;
 	private double h;
