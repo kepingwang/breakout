@@ -126,9 +126,9 @@ public class Bat extends Sprite {
 	
 	@Override
 	protected void collisionEffectsSpec(Ball ball) {
+		ball.speedUp(1.03);
 		if (isSticky()) {
 			ball.stickOnBat(this);
-			ball.setV(0, 0);
 		}
 	}
 	@Override

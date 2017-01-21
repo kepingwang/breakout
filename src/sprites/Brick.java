@@ -17,7 +17,7 @@ public class Brick extends Sprite {
 	private double timeRemain = EXPLOSION_TIME; // before disappears
 	private int lives;
 	private boolean breakable;
-	private int powerUpType; // TODO specify powerUpType int type correspondence
+	private int powerUpType;
 	// -1 for no power up
 	
 	private double w;

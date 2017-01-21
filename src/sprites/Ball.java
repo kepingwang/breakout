@@ -11,7 +11,7 @@ public class Ball extends Sprite {
 	public static final double INIT_SPEED = 360;
 	public static final double MIN_SPEED = 10;
 	public static final double MAX_SPEED = 6000;
-	public static final double INIT_RADIUS = 15;
+	public static final double INIT_RADIUS = 13;
 	
 	private double r;
 	private Bat bat = null;
@@ -23,7 +23,7 @@ public class Ball extends Sprite {
 		this.bat = bat;
 		bat.addBall(this);
 		initCollidables();
-		setV(0, 0);
+		setV(0, -INIT_SPEED);
 	}
 	public Ball(Ball other) {
 		super(other.world, other.x(), other.y(), 1);
@@ -56,13 +56,14 @@ public class Ball extends Sprite {
 		this.bat = bat;
 		bat.addBall(this);
 	}
+	public boolean stuckOnBat() { return bat != null; }
 	public void shootFromBat() { // No response if not stuck on bat
-		if (bat != null) {
-			double v = INIT_SPEED;
+		if (stuckOnBat()) {
+			double v = v();
 			double angle = 0.9 * (Math.PI / 2) * ( (x() - bat.x()) / bat.w() );
-			setV(v * Math.sin(angle), - v * Math.cos(angle));
 			bat.removeBall(this);
-			bat = null;
+			bat = null; // order matters
+			setV(v * Math.sin(angle), - v * Math.cos(angle));
 		}
 	}
 	
@@ -83,7 +84,7 @@ public class Ball extends Sprite {
 	
 	@Override
 	public void update(double dt) {
-		updatePos(dt);
+		if (!stuckOnBat()) { updatePos(dt); }
 	}
 	
 	@Override
@@ -106,7 +107,8 @@ public class Ball extends Sprite {
 	}
 	@Override
 	public Collision predictCollision(Sprite other) {
-		return other.predictCollisionSpec(this);
+		if (stuckOnBat()) { return null; }
+		else { return other.predictCollisionSpec(this); }
 	}
 
 

@@ -6,12 +6,19 @@ import collidables.HLine;
 import collidables.VLine;
 import collisions.Collision;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 public class PowerUp extends Sprite {
 	
 	private static final double powerUpWidth = 50;
 	private static final double powerUpHeight = 50;
 	private static final double powerUpFallingSpeed = 300;
+
+	public static final int GUNNER = 1;
+	public static final int STICKY = 2;
+	public static final int ADD_LIFE = 3;
 	
 	private double w;
 	private double h;
@@ -22,7 +29,8 @@ public class PowerUp extends Sprite {
 		w = powerUpWidth;
 		h = powerUpHeight;
 		setVY(powerUpFallingSpeed);
-		type = powerUpType;
+		if (powerUpType <= 0 || powerUpType >= 4) { type = -1; } 
+		else { type = powerUpType; }
 		initCollidables();
 	}
 	@Override
@@ -35,11 +43,9 @@ public class PowerUp extends Sprite {
 	}
 
 	public void takeEffect() {
-		if (type >= 0) { System.out.println("Power UP!!"); }
-//		world.smallBall();
-//		world.bigBall();
-		world.shortBat();
-		// TODO;
+		if (type == GUNNER) { world.makeBatGunner(); }
+		else if (type == STICKY) { world.makeBatSticky(); }
+		else if (type == ADD_LIFE) { world.addLife(); }
 	}
 	
 	@Override
@@ -50,8 +56,18 @@ public class PowerUp extends Sprite {
 	@Override
 	public void render(GraphicsContext gc) {
 		gc.fillRect(x()-w/2, y()-h/2, w, h);
+		String typeSymbol = "";
+		if (type == GUNNER) { typeSymbol = "G"; }
+		else if (type == STICKY) { typeSymbol = "S"; }
+		else if (type == ADD_LIFE) { typeSymbol = "L"; }
+		gc.setFont(Font.font(40));
+		gc.setFill(Color.WHITE);
+		gc.setTextAlign(TextAlignment.CENTER);
+		gc.fillText(typeSymbol, x(), y()+w*0.3, w);
+		gc.setFont(Font.font(12));
+		gc.setFill(Color.BLACK);
+		gc.setTextAlign(TextAlignment.LEFT);
 	}
-
 
 	@Override
 	protected Collision predictCollisionSpec(Bat bat) {

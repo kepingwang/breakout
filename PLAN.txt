@@ -1,6 +1,7 @@
 Game plan for breakout.
 
 The main feature of the game is some powerups:
+(1, 2 are not implemented yet.)
 1. Fire ball. (The bricks hit explodes with neighbors.)
 2. Lightning ball. (Going through everything.)
 3. Multiple balls.

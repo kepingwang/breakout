@@ -129,30 +129,21 @@ public class GameWorld {
 		scene.setOnKeyReleased(e -> {
 			String code = e.getCode().toString();
 			keyInput.remove(code);
-			if (code.equals("EQUALS")) {
-				speedUp(1.5);
-			}
-			if (code.equals("MINUS")) {
-				speedUp(0.666);
-			}
-			if (code.equals("N")) {
-				playNextLevel();
-			}
-			if (code.equals("R")) {
-				resetBall();
-			}
-			if (code.equals("L")) {
-				scoreBoard.addLife(1);
-			}
-			if (code.equals("S")) {
-				splitBalls();
-			}
-			if (code.equals("T")) {
-				makeBatSticky();
-			}
-			if (code.equals("G")) {
-				makeBatGunner();
-			}
+			System.out.println(code);
+			if (code.equals("EQUALS")) { speedUp(1.5); }
+			else if (code.equals("MINUS")) { speedUp(0.666);	}
+			else if (code.equals("N")) { playNextLevel(); }
+			else if (code.equals("R")) { resetBall(); }
+			else if (code.equals("L")) { addLife(); }
+			else if (code.equals("B")) { splitBalls(); }
+			else if (code.equals("S")) { makeBatSticky(); }
+			else if (code.equals("G")) { makeBatGunner(); }
+			else if (code.equals("Z")) { smallBall(); }
+			else if (code.equals("X")) { midBall(); }
+			else if (code.equals("C")) { bigBall(); }
+			else if (code.equals("DIGIT1")) { shortBat(); }
+			else if (code.equals("DIGIT2")) { midBat(); }
+			else if (code.equals("DIGIT3")) { longBat(); }
 		});
 		scene.setOnMouseMoved(e -> {
 			mouseMove.add(e.getSceneX());
@@ -340,6 +331,9 @@ public class GameWorld {
 	}
 	
 	//// Cheat key and power up effects.
+	public void addLife() {
+		scoreBoard.addLife(1);
+	}
 	public void speedUp(double factor) {
 		for (Ball ball : balls) {
 			ball.speedUp(factor);
@@ -350,18 +344,26 @@ public class GameWorld {
 			ball.setR(Ball.INIT_RADIUS / 2);
 		}
 	}
+	public void midBall() {
+		for (Ball ball : balls) {
+			ball.setR(Ball.INIT_RADIUS);
+		}
+	}
 	public void bigBall() {
 		for (Ball ball : balls) {
 			ball.setR(Ball.INIT_RADIUS * 2);
 		}
 	}
+	public void midBat() {
+		bat.setW(Bat.INIT_WIDTH);
+	}
+	public void shortBat() {
+		bat.setW(Bat.INIT_WIDTH / 2);
+	}
 	public void longBat() {
 		// TODO: buggy. ball may be in the middle of long bat.
 		// Could possibly make the bat grow longer gradually.
 		bat.setW(Bat.INIT_WIDTH * 2);
-	}
-	public void shortBat() {
-		bat.setW(Bat.INIT_WIDTH / 2);
 	}
 	public void splitBalls() { // the other ball has opposite v
 		List<Ball> oppoBalls = new ArrayList<>();

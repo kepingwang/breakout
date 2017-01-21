@@ -8,7 +8,7 @@ public class BlockingImage implements Displayable {
 
 	public static final String TROLL_FACE = "img/troll_face.png";
 	public static final double INIT_WIDTH = 120;
-	public static final double SHRINKING_SPEED = 15;
+	public static final double SHRINKING_SPEED = 25;
 	public static final double H_W = 0.817;
 	private Image image;
 	private double x = -1;
@@ -20,9 +20,8 @@ public class BlockingImage implements Displayable {
 		image = new Image(classLoader.getResourceAsStream(TROLL_FACE));
 	}
 	private void setRandomPos() {
-		x = - Math.random()*GameApp.WIDTH*0.4 + GameApp.WIDTH*0.5;
-		y = - Math.random()*GameApp.HEIGHT*0.4 + GameApp.HEIGHT*0.5;
-		System.out.println(String.format("face: (%.2f, %.2f)", x, y));
+		x = Math.random()*GameApp.WIDTH*0.9 + GameApp.WIDTH*0.05;
+		y = Math.random()*GameApp.HEIGHT*0.9 + GameApp.HEIGHT*0.05;
 	}
 	
 	public void enlargeByFactor(double factor) {
