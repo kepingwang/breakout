@@ -151,6 +151,9 @@ public class GameWorld {
 			if (code.equals("T")) {
 				makeBatSticky();
 			}
+			if (code.equals("G")) {
+				makeBatGunner();
+			}
 		});
 		scene.setOnMouseMoved(e -> {
 			mouseMove.add(e.getSceneX());
@@ -295,12 +298,8 @@ public class GameWorld {
 	public void addPowerUp(PowerUp powerUp) { powerUps.add(powerUp); }
 	public void addToFadings(Brick brick) {	fadings.add(brick);	}
 	public void removeFromFadings(Brick brick) { fadings.remove(brick); }
-	public void addBullet(Bullet bullet) {
-		bullets.add(bullet);
-	}
-	public void removeBullet(Bullet bullet) {
-		bullets.remove(bullet);
-	}
+	public void addBullet(Bullet bullet) { bullets.add(bullet); }
+	public void removeBullet(Bullet bullet) { bullets.remove(bullet); }
 	
 	public void predictCollisions(Sprite sprite) {
 		if (!getAllSprites().contains(sprite)) { return; }
@@ -369,6 +368,9 @@ public class GameWorld {
 		for (Ball oppoBall : oppoBalls) {
 			oppoBall.setV( - oppoBall.vx(), - oppoBall.vy());
 		}
+	}
+	public void makeBatGunner() {
+		bat.makeGunner(15);
 	}
 	public void makeBatSticky() {
 		bat.makeSticky(15);

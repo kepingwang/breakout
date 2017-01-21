@@ -9,18 +9,22 @@ import collidables.Collidable;
 import collidables.HLine;
 import collisions.Collision;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class Bat extends Sprite {
 
 	public static final double KEYBOARD_SPEED = 600;
 	public static final double INIT_WIDTH = 150;
 	public static final double INIT_HEIGHT = 30;
+	public static final double BULLET_SPACING_TIME = 0.5;
 	
 	private double w;
 	private double h;
 	
 	private List<Ball> balls;
 	private double stickyTime = -1;
+	private double bulletWait = -1;
+	private double gunnerTime = -1;
 	
 	public Bat(GameWorld world, double x, double y) {
 		super(world, x, y, -1);
@@ -61,12 +65,20 @@ public class Bat extends Sprite {
 	public boolean isSticky() {
 		return stickyTime > 0;
 	}
-	public void shootBullet() {
-		Bullet bullet = new Bullet(this);
-		world.addBullet(bullet);
-		bullet.setV(0, -Bullet.SPEED);
+	public void makeGunner(double t) {
+		gunnerTime = t;
 	}
-	
+	public boolean isGunner() {
+		return gunnerTime > 0;
+	}
+	public void shootBullet() {
+		if (isGunner() && bulletWait < 0) {
+			Bullet bullet = new Bullet(this);
+			world.addBullet(bullet);
+			bullet.setV(0, -Bullet.SPEED);
+			bulletWait = BULLET_SPACING_TIME;
+		}
+	}
 	
 	/**
 	 * If a ball is stuck on bat, update the ball together with the bat.
@@ -77,14 +89,26 @@ public class Bat extends Sprite {
 			ball.setX(ball.x() + vx()*dt);
 		}
 		updatePos(dt);
-		if (stickyTime >= 0) {
-			stickyTime -= dt;
-		}
+		if (stickyTime >= 0) { stickyTime -= dt; }
+		if (gunnerTime >= 0) { gunnerTime -= dt; }
+		if (bulletWait >= 0) { bulletWait -= dt; }
 	}
 	
 	@Override
 	public void render(GraphicsContext gc) {
 		gc.fillRoundRect(x()-w/2, y()-h/2, w, h, h, h);
+		if (isGunner()) {
+			gc.setFill(Color.WHITE);
+			gc.fillRoundRect(x()-Bullet.WIDTH/2, y()-Bullet.LENGTH/2,
+					Bullet.WIDTH, Bullet.LENGTH, Bullet.WIDTH, Bullet.WIDTH);
+			gc.setFill(Color.BLACK);
+		}
+		if (isSticky()) {
+			gc.setFill(Color.WHITE);
+			gc.fillRoundRect(x()-(w-h)/2, y()-Bullet.WIDTH/2,
+					(w-h), Bullet.WIDTH, Bullet.WIDTH, Bullet.WIDTH);
+			gc.setFill(Color.BLACK);
+		}
 	}
 
 	@Override
