@@ -20,6 +20,7 @@ public class Bat extends Sprite {
 	private double h;
 	
 	private List<Ball> balls;
+	private double stickyTime = -1;
 	
 	public Bat(GameWorld world, double x, double y) {
 		super(world, x, y, -1);
@@ -36,14 +37,7 @@ public class Bat extends Sprite {
 		collidables[2] = new Circle(this, -(w-h)/2, 0, h/2); 
 		collidables[3] = new Circle(this, +(w-h)/2, 0, h/2); 
 	}
-	
-	public void addBall(Ball ball) {
-		balls.add(ball);
-	}
-	public void removeBall(Ball ball) {
-		balls.remove(ball);
-	}
-	
+
 	public double w() { return w; }
 	public double h() { return h; }
 	public void setW(double w) {
@@ -55,14 +49,36 @@ public class Bat extends Sprite {
 		setPos(x(), y());
 	}
 	
+	public void addBall(Ball ball) {
+		balls.add(ball);
+	}
+	public void removeBall(Ball ball) {
+		balls.remove(ball);
+	}
+	public void makeSticky(double t) {
+		stickyTime = t;
+	}
+	public boolean isSticky() {
+		return stickyTime > 0;
+	}
+	public void shootBullet() {
+		Bullet bullet = new Bullet(this);
+		world.addBullet(bullet);
+		bullet.setV(0, -Bullet.SPEED);
+	}
+	
+	
 	/**
 	 * If a ball is stuck on bat, update the ball together with the bat.
 	 */
 	@Override
 	public void update(double dt) {
-		updatePos(dt);
 		for (Ball ball : balls) {
-			ball.setX(x());
+			ball.setX(ball.x() + vx()*dt);
+		}
+		updatePos(dt);
+		if (stickyTime >= 0) {
+			stickyTime -= dt;
 		}
 	}
 	
@@ -84,6 +100,13 @@ public class Bat extends Sprite {
 		return other.predictCollisionSpec(this);
 	}
 	
+	@Override
+	protected void collisionEffectsSpec(Ball ball) {
+		if (isSticky()) {
+			ball.stickOnBat(this);
+			ball.setV(0, 0);
+		}
+	}
 	@Override
 	protected void collisionEffectsSpec(PowerUp powerUp) {
 		powerUp.takeEffect();

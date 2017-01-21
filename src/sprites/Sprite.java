@@ -72,6 +72,20 @@ public abstract class Sprite implements Displayable {
 		world.predictCollisions(this);
 	}
 	
+	/**
+	 * Only update (x, y) positions according to (vx, vy). Assume no
+	 * acceleration. No other effects.
+	 * @param dt
+	 */
+	protected void updatePos(double dt) {
+		x += vx * dt;
+		y += vy * dt;
+	}
+
+	public abstract void update(double dt);
+
+	public abstract void render(GraphicsContext gc);
+	
 	protected Collision predictCollisionImpl(Sprite other) {
 		if (collidables == null || other.collidables == null) { return null; }
 		double dtMin = -1;
@@ -98,6 +112,7 @@ public abstract class Sprite implements Displayable {
 	protected Collision predictCollisionSpec(Wall wall) { return null; }
 	protected Collision predictCollisionSpec(Brick brick) { return null; }
 	protected Collision predictCollisionSpec(PowerUp powerUp) { return null; }
+	protected Collision predictCollisionSpec(Bullet bullet) { return null; }
 	public abstract Collision predictCollision(Sprite other);
 
 	protected void collisionEffectsSpec(Ball ball) { }
@@ -105,22 +120,8 @@ public abstract class Sprite implements Displayable {
 	protected void collisionEffectsSpec(Wall wall) { }
 	protected void collisionEffectsSpec(Brick brick) { }
 	protected void collisionEffectsSpec(PowerUp powerUP) { }
+	protected void collisionEffectsSpec(Bullet bullet) { }
 	public abstract void collisionEffects(Sprite other);
-	
-	
-	/**
-	 * Only update (x, y) positions according to (vx, vy). Assume no
-	 * acceleration. No other effects.
-	 * @param dt
-	 */
-	protected void updatePos(double dt) {
-		x += vx * dt;
-		y += vy * dt;
-	}
-
-	public abstract void update(double dt);
-
-	public abstract void render(GraphicsContext gc);
 	
 	protected abstract String spriteName();
 	@Override

@@ -1,5 +1,6 @@
 package sprites;
 
+import breakout.GameApp;
 import collidables.Circle;
 import collidables.Collidable;
 import collisions.Collision;
@@ -17,7 +18,7 @@ public class Ball extends Sprite {
 	private int attackPower = 1;
 	
 	public Ball(Bat bat) {
-		super(bat.world, bat.x(), bat.y()-bat.h()/2-INIT_RADIUS, 1);
+		super(bat.world, bat.x(), bat.y()-bat.h()/2-INIT_RADIUS-GameApp.EPS_DIST, 1);
 		r = INIT_RADIUS;
 		this.bat = bat;
 		bat.addBall(this);
@@ -51,11 +52,17 @@ public class Ball extends Sprite {
 		setPos(x(), y());
 	}
 	
+	public void stickOnBat(Bat bat) {
+		this.bat = bat;
+		bat.addBall(this);
+	}
 	public void shootFromBat() { // No response if not stuck on bat
 		if (bat != null) {
+			double v = INIT_SPEED;
+			double angle = 0.9 * (Math.PI / 2) * ( (x() - bat.x()) / bat.w() );
+			setV(v * Math.sin(angle), - v * Math.cos(angle));
 			bat.removeBall(this);
 			bat = null;
-			setV(0, -INIT_SPEED);
 		}
 	}
 	
@@ -63,7 +70,6 @@ public class Ball extends Sprite {
 		// TODO special attack effects.
 		brick.takesDamage(attackPower);
 	}
-
 
 	/**
 	 * Speed up (or slow down) the ball by a factor.
@@ -104,6 +110,10 @@ public class Ball extends Sprite {
 	}
 
 
+	@Override
+	protected void collisionEffectsSpec(Bat bat) {
+		bat.collisionEffectsSpec(this);
+	}
 	@Override
 	protected void collisionEffectsSpec(Brick brick) {
 		this.attack(brick);

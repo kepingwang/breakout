@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import sprites.Ball;
 import sprites.Bat;
 import sprites.Brick;
+import sprites.Bullet;
 import sprites.Displayable;
 import sprites.PowerUp;
 import sprites.Sprite;
@@ -40,6 +41,7 @@ public class GameWorld {
 	List<Wall> walls;
 	List<Brick> bricks;
 	List<PowerUp> powerUps;
+	List<Bullet> bullets;
 	
 	// Other displays
 	ScoreBoard scoreBoard;
@@ -146,6 +148,9 @@ public class GameWorld {
 			if (code.equals("S")) {
 				splitBalls();
 			}
+			if (code.equals("T")) {
+				makeBatSticky();
+			}
 		});
 		scene.setOnMouseMoved(e -> {
 			mouseMove.add(e.getSceneX());
@@ -177,6 +182,7 @@ public class GameWorld {
 		walls = new ArrayList<Wall>();
 		bricks = new ArrayList<Brick>();
 		powerUps = new ArrayList<PowerUp>();
+		bullets = new ArrayList<Bullet>();
 		bat = new Bat(this, GameApp.WIDTH/2, GameApp.HEIGHT - 2 * Bat.INIT_HEIGHT);
 		balls.add(new Ball(bat));
 		walls.add(new Wall(this, 0, GameApp.HEIGHT / 2 + Ball.INIT_RADIUS * 2, Wall.LEFT));
@@ -262,11 +268,13 @@ public class GameWorld {
 		if (shootFromBat) {
 			for (Ball ball : balls) { ball.shootFromBat(); }
 			shootFromBat = false;
+			bat.shootBullet();
 		}
 	}
 
 	public List<Sprite> getAllSprites() {
 		List<Sprite> sprites = new ArrayList<>();
+		sprites.addAll(bullets);
 		sprites.add(bat);
 		sprites.addAll(balls);
 		sprites.addAll(bricks);
@@ -287,6 +295,12 @@ public class GameWorld {
 	public void addPowerUp(PowerUp powerUp) { powerUps.add(powerUp); }
 	public void addToFadings(Brick brick) {	fadings.add(brick);	}
 	public void removeFromFadings(Brick brick) { fadings.remove(brick); }
+	public void addBullet(Bullet bullet) {
+		bullets.add(bullet);
+	}
+	public void removeBullet(Bullet bullet) {
+		bullets.remove(bullet);
+	}
 	
 	public void predictCollisions(Sprite sprite) {
 		if (!getAllSprites().contains(sprite)) { return; }
@@ -355,5 +369,8 @@ public class GameWorld {
 		for (Ball oppoBall : oppoBalls) {
 			oppoBall.setV( - oppoBall.vx(), - oppoBall.vy());
 		}
+	}
+	public void makeBatSticky() {
+		bat.makeSticky(15);
 	}
 }

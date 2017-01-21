@@ -109,6 +109,10 @@ public class Brick extends Sprite {
 		return ball.predictCollisionSpec(this);
 	}
 	@Override
+	protected Collision predictCollisionSpec(Bullet bullet) {
+		return bullet.predictCollisionSpec(this);
+	}
+	@Override
 	public Collision predictCollision(Sprite other) {
 		return other.predictCollisionSpec(this);
 	}
@@ -117,6 +121,10 @@ public class Brick extends Sprite {
 	@Override
 	protected void collisionEffectsSpec(Ball ball) {
 		ball.collisionEffectsSpec(this);
+	}
+	@Override
+	protected void collisionEffectsSpec(Bullet bullet) {
+		bullet.collisionEffectsSpec(this);
 	}
 	@Override
 	public void collisionEffects(Sprite other) {
