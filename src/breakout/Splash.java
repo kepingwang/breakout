@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
- * A wrapper of the splash scene 
+ * A wrapper of the splash scene. Direct the users.
  * @author keping
  */
 public class Splash {

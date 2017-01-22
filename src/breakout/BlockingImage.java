@@ -4,6 +4,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import sprites.Displayable;
 
+/**
+ * An easter egg from shooting bullets. Block your sight.
+ * @author keping
+ *
+ */
 public class BlockingImage implements Displayable {
 
 	public static final String TROLL_FACE = "img/troll_face.png";

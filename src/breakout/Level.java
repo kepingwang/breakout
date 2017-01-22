@@ -8,6 +8,11 @@ import java.util.List;
 
 import sprites.Brick;
 
+/**
+ * A wrapper class to store the levels configuration.
+ * @author keping
+ *
+ */
 public class Level {
 	
 	private int nBricksHorizontal = -1;

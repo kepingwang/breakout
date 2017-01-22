@@ -5,6 +5,12 @@ import collidables.Collidable;
 import collisions.Collision;
 import javafx.scene.canvas.GraphicsContext;
 
+/**
+ * A Sprite has certain Collidables. A Sprite can collides with another Sprite,
+ * but in fact it's collidables that collide.
+ * @author keping
+ *
+ */
 public abstract class Sprite implements Displayable {
 	
 	protected GameWorld world;
@@ -113,6 +119,13 @@ public abstract class Sprite implements Displayable {
 	protected Collision predictCollisionSpec(Brick brick) { return null; }
 	protected Collision predictCollisionSpec(PowerUp powerUp) { return null; }
 	protected Collision predictCollisionSpec(Bullet bullet) { return null; }
+	/**
+	 * The main method to be called for collision prediction.
+	 * Return null if no Collision is predicted to happen.
+	 * The implementation is to use specific polymorphism methods.
+	 * @param other
+	 * @return Collision (or null if no collision)
+	 */
 	public abstract Collision predictCollision(Sprite other);
 
 	protected void collisionEffectsSpec(Ball ball) { }
@@ -121,6 +134,11 @@ public abstract class Sprite implements Displayable {
 	protected void collisionEffectsSpec(Brick brick) { }
 	protected void collisionEffectsSpec(PowerUp powerUP) { }
 	protected void collisionEffectsSpec(Bullet bullet) { }
+	/**
+	 * The main method to be called for handling side effects of collision.
+	 * The implementation is to use specific polymorphism methods.
+	 * @param other
+	 */
 	public abstract void collisionEffects(Sprite other);
 	
 	protected abstract String spriteName();

@@ -20,6 +20,11 @@ import sprites.PowerUp;
 import sprites.Sprite;
 import sprites.Wall;
 
+/**
+ * The world where the game is played.
+ * @author keping
+ *
+ */
 public class GameWorld {
 
 	// JavaFX components
@@ -58,6 +63,7 @@ public class GameWorld {
 	// Collision events
 	PriorityQueue<Collision> collisions;
 	
+	// Initialize the object
 	public GameWorld(GameApp gameApp, Stage stage) {
 		this.gameApp = gameApp;
 		this.stage = stage; 
@@ -65,6 +71,7 @@ public class GameWorld {
 	public void setSplash(Splash splash) { this.splash = splash; }
 	public Scene scene() { return scene; }
 	
+	// Initialize the environment for each level to play. Called once.
 	private void initScene() {
 		root = new Group();
 		Canvas canvas = new Canvas(GameApp.WIDTH, GameApp.HEIGHT);
@@ -157,6 +164,7 @@ public class GameWorld {
 		initEventHandlers();
 	}
 	
+	// Initialize level and play.
 	public void initPlay() {
 		scoreBoard = new ScoreBoard(this, 0, 3, 1);
 	}
@@ -197,6 +205,7 @@ public class GameWorld {
 		playLevel(scoreBoard.level());
 	}
 
+	// Methods for scoreBoard (scores, lives, levels)
 	public void addScore(int score) {
 		scoreBoard.addScore(score); 
 	}
@@ -233,6 +242,10 @@ public class GameWorld {
 		splash.show();
 	}
 	
+	/**
+	 * Handle user input to update bat speed and shooting (ball or bullet).
+	 * @param dt
+	 */
 	private void handleUserInput(double dt) {
 		double x0 = bat.x();
 		double x1 = x0;
@@ -265,6 +278,7 @@ public class GameWorld {
 		}
 	}
 
+	// Methods to get all super classes to loop over
 	public List<Sprite> getAllSprites() {
 		List<Sprite> sprites = new ArrayList<>();
 		sprites.addAll(bullets);
@@ -283,6 +297,7 @@ public class GameWorld {
 		return otherDisplays;
 	}
 	
+	// Methods for adding and removing sprites/displays in the world 
 	public void removeBall(Ball ball) { balls.remove(ball); }
 	public void removeBrick(Brick brick) { bricks.remove(brick); }
 	public void removePowerUp(PowerUp powerUp) { powerUps.remove(powerUp); }
@@ -295,6 +310,14 @@ public class GameWorld {
 	}
 	public void removeBullet(Bullet bullet) { bullets.remove(bullet); }
 	
+	/**
+	 * Predict the collisions that {@code sprite} is going to have with
+	 * all other sprites, and add the collisions to the priority queue.
+	 * 
+	 * This method shall be called each time the trajectory of a sprite
+	 * changes (initialization, v change, hard position reset, size change...)
+	 * @param sprite
+	 */
 	public void predictCollisions(Sprite sprite) {
 		if (!getAllSprites().contains(sprite)) { return; }
 		for (Sprite other : getAllSprites()) {
@@ -306,6 +329,11 @@ public class GameWorld {
 		}
 	}
 
+	/**
+	 * Update the positions (states) of the sprites and
+	 * other displayables by time {@code dt}
+	 * @param dt
+	 */
 	private void update(double dt) {
 		for (Sprite sprite : getAllSprites()) {
 			sprite.update(dt);
@@ -319,6 +347,10 @@ public class GameWorld {
 		currTime = targetTime;
 	}
 	
+	/**
+	 *  Render the displayables on the canvas
+	 * @param gc
+	 */
 	private void render(GraphicsContext gc) {
 		gc.clearRect(0, 0, GameApp.WIDTH, GameApp.HEIGHT);
 		for (Sprite sprite : getAllSprites()) {

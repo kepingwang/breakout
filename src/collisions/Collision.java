@@ -2,6 +2,15 @@ package collisions;
 
 import collidables.Collidable;
 
+/**
+ * Each collision will be stored in a priority queue and processed according to
+ * the predicted happening time. A collision remembers which collidables (thus sprites) are
+ * going to collide. The collision becomes invalid if the trajectory of any
+ * involving sprite changed after the time prediction was made.
+ * 
+ * @author keping
+ *
+ */
 public class Collision implements Comparable<Collision> {
 	
 	protected Collidable c0;
@@ -16,6 +25,10 @@ public class Collision implements Comparable<Collision> {
 		this.timeHappening = timeHappening;
 	}
 	
+	/**
+	 * Collision is resolved in two steps. First change of physical trajectory.
+	 * Second special effects (like taking damage, disappearing).
+	 */
 	public void resolve() {
 		c0.collides(c1);
 		c0.sprite().collisionEffects(c1.sprite());

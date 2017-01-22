@@ -3,6 +3,11 @@ package breakout;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+/**
+ * The entering class of the game application.
+ * @author keping
+ *
+ */
 public class GameApp extends Application {
 	
 	public static final double EPS_DIST = 1e-6;

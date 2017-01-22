@@ -5,6 +5,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import sprites.Displayable;
 
+/**
+ * ScoreBoard class to maintain score, lives, and level.
+ * @author keping
+ *
+ */
 public class ScoreBoard implements Displayable {
 
 	private GameWorld world;

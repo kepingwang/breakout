@@ -3,10 +3,11 @@ package collidables;
 import sprites.Sprite;
 
 /**
- * Before collision detection. The position and velocity of the Collidable 
- * shall be updated.
+ * Each collidable belongs to a sprite. The Collidable class remembers the relative 
+ * positions of its points with respect to the center (x, y) of its sprite. On 
+ * collision detection, the Collidable get its position and velocity from its sprite.
+ * 
  * @author keping
- *
  */
 public abstract class Collidable {
 	
