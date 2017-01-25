@@ -5,6 +5,9 @@ import collidables.Collidable;
 import collisions.Collision;
 import javafx.scene.canvas.GraphicsContext;
 
+// This entire file is part of my masterpiece.
+// Keping Wang
+
 /**
  * A Sprite has certain Collidables. A Sprite can collides with another Sprite,
  * but in fact it's collidables that collide.

@@ -2,6 +2,9 @@ package collidables;
 
 import sprites.Sprite;
 
+// This entire file is part of my masterpiece
+// Keping Wang
+
 /**
  * Each collidable belongs to a sprite. The Collidable class remembers the relative 
  * positions of its points with respect to the center (x, y) of its sprite. On 
