@@ -19,9 +19,12 @@ public abstract class Sprite implements Displayable {
 	private double vx = 0;
 	private double vy = 0;
 	/**
-	 * Mass of the sprite. -1 if infinity.
+	 * Mass of the sprite. -1 if infinity. Used for collision resolution.
 	 */
 	private double m;
+	/**
+	 * A Sprite contains Collidables, which makes collision possible.
+	 */
 	protected Collidable[] collidables = null;
 	private long sysTimeLastCollision;
 	
@@ -68,6 +71,10 @@ public abstract class Sprite implements Displayable {
 	public void setY(double y) { setPos(x, y); }
 	public Collidable[] collidables() { return collidables; }
 	
+	/**
+	 * Returns true if this sprite (still) exists in the world (as a sprite).
+	 * @return
+	 */
 	public boolean exists() { return world.getAllSprites().contains(this); }
 
 	public boolean trajectoryUnchangedAfter(double t) {
@@ -122,7 +129,9 @@ public abstract class Sprite implements Displayable {
 	/**
 	 * The main method to be called for collision prediction.
 	 * Return null if no Collision is predicted to happen.
-	 * The implementation is to use specific polymorphism methods.
+	 * The implementation is to use specific polymorphism methods: 
+	 * {@code return other.predictCollisionSpec(this); }
+	 * 
 	 * @param other
 	 * @return Collision (or null if no collision)
 	 */
@@ -136,7 +145,9 @@ public abstract class Sprite implements Displayable {
 	protected void collisionEffectsSpec(Bullet bullet) { }
 	/**
 	 * The main method to be called for handling side effects of collision.
-	 * The implementation is to use specific polymorphism methods.
+	 * The implementation is to use specific polymorphism methods:
+	 * {@code other.predictCollisionSpec(this); }
+	 * 
 	 * @param other
 	 */
 	public abstract void collisionEffects(Sprite other);

@@ -27,6 +27,7 @@ public abstract class Collidable {
 	
 	/**
 	 * [a0, a1] or [a1, a0]. [b0, b1] or [b1, b0]
+	 * A helper method.
 	 * 
 	 * @param a0
 	 * @param a1
@@ -52,10 +53,19 @@ public abstract class Collidable {
 	protected double collisionTimeSpec(VLine vl) { return -1; }
 	protected double collisionTimeSpec(HLine hl) { return -1; }
 	protected double collisionTimeSpec(Circle circle) { return -1; }
+	/**
+	 * Return collision time, -1 if no collision.
+	 * @param other
+	 * @return 
+	 */
 	public abstract double collisionTime(Collidable other);	
 	
 	protected void collidesSpec(VLine vl) { }
 	protected void collidesSpec(HLine hl) { }
 	protected void collidesSpec(Circle circle) { }
+	/**
+	 * Physical effects of the collision take place.
+	 * @param other
+	 */
 	public abstract void collides(Collidable other);
 }
