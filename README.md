@@ -1,3 +1,5 @@
+#### TODO: I use canvas and 2d graph context for rendering. Currently I re-render each displayable in each frame. However, a better approach is to set a dirty bit for displayable and only re-render a displayable if it's dirty (has been changed during the frame).
+
 ### Breakout Game 打砖块, for Duke CompSci 308.
 #### -- by Keping Wang
 
